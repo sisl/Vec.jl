@@ -1,5 +1,6 @@
 using Vec
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+include("test_vecE2.jl")
+include("test_vecE3.jl")
+include("test_vecSE2.jl")

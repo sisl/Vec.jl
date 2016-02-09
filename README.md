@@ -15,9 +15,9 @@ Pkg.clone("https://github.com/tawheeler/Vec.jl.git")
 
 `Vec.jl` provides several vector types, named after their groups. All types are immutable.
 
-* `VecE2` provides an $(x,y)$ type of the Euclidean-2 group.
-* `VecE3` provides an $(x,y,z)$ type of the Euclidean-3 group.
-* `VecSE2` provides an $(x,y,\theta)$ type of the special-euclidean 2 group.
+* `VecE2` provides an $$(x,y)$$ type of the Euclidean-2 group.
+* `VecE3` provides an $$(x,y,z)$$ type of the Euclidean-3 group.
+* `VecSE2` provides an $$(x,y,\theta)$$ type of the special-euclidean 2 group.
 
 ```julia
 v = VecE2(0, 1)

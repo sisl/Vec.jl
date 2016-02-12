@@ -24,25 +24,43 @@ function Base.convert{R<:Real}(::Type{VecSE2}, a::AbstractArray{R})
 end
 Base.show(io::IO, a::VecSE2) = @printf(io, "VecSE2({%.3f, %.3f}, %.3f)", a.x, a.y, a.θ)
 
-# function Base.isapprox(x::VecE, y::VecE;
-#     _absx::Float64 = abs(x),
-#     _absy::Float64 = abs(y),
-#     _maxeps::Float64 = max(eps(_absx), eps(_absy)),
-#     rtol::Real=cbrt(_maxeps),
-#     atol::Real=sqrt(_maxeps)
-#     )
-
-#     dist2(x, y) <= atol + rtol*max(_absx, _absy)
-# end
-
+Base.(:(+))(b::Real, a::VecSE2) = VecSE2(a.x+b, a.y+b, a.θ)
+Base.(:(+))(a::VecSE2, b::Real) = VecSE2(a.x+b, a.y+b, a.θ)
 Base.(:(+))(a::VecSE2, b::VecE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ)
 Base.(:(+))(a::VecSE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ+b.θ)
 
+Base.(:(-))(b::Real, a::VecSE2) = VecSE2(b-a.x, b-a.y, a.θ)
+Base.(:(-))(a::VecSE2, b::Real) = VecSE2(a.x-b, a.y-b, a.θ)
 Base.(:(-))(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
 Base.(:(-))(a::VecSE2, b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ-b.θ)
 
+Base.(:(*))(b::Real, a::VecSE2) = VecSE2(b*a.x, b*a.y, a.θ)
+Base.(:(*))(a::VecSE2, b::Real) = VecSE2(a.x*b, a.y*b, a.θ)
+
+Base.(:(/))(a::VecSE2, b::Real) = VecSE2(a.x/b, a.y/b, a.θ)
+
+Base.(:(^))(a::VecSE2, b::Integer) = VecSE2(a.x^b, a.y^b, a.θ)
+Base.(:(^))(a::VecSE2, b::AbstractFloat) = VecSE2(a.x^b, a.y^b, a.θ)
+
+Base.(:(%))(a::VecSE2, b::Real) = VecSE2(a.x%b, a.y%b, a.θ)
+
 Base.(:(==))(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
 Base.isequal(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
+function Base.isapprox(a::VecSE2, b::VecSE2;
+    _absa::Float64 = abs(a),
+    _absb::Float64 = abs(b),
+    _maxeps::Float64 = max(eps(_absa), eps(_absb)),
+    rtol::Real=cbrt(_maxeps),
+    atol::Real=sqrt(_maxeps)
+    )
+
+    isapprox(VecE2(a.x, a.y), VecE2(b.x, b.y), _absa=_absa, _absb=_absb, _maxeps=_maxeps, rtol=rtol, atol=atol) &&
+    isapprox(a.θ, b.θ, rtol=rtol, atol=atol)
+end
+
+Base.isfinite(a::VecSE2) = isfinite(a.x) && isfinite(a.y) && isfinite(a.θ)
+Base.isinf(a::VecSE2) = isinf(a.x) || isinf(a.y) || isinf(a.θ)
+Base.isnan(a::VecSE2) = isnan(a.x) || isnan(a.y) || isnan(a.θ)
 
 Base.abs(a::VecSE2) = hypot(a.x, a.y)
 Base.hypot(a::VecSE2) = hypot(a.x, a.y)

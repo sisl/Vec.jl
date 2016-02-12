@@ -1,3 +1,5 @@
+VERSION >= v"0.4.0-dev+6521" && __precompile__(true)
+
 module Vec
 
 export
@@ -37,15 +39,15 @@ include("vecE2.jl")
 include("vecE3.jl")
 include("vecSE2.jl")
 
-function Base.isapprox(x::VecE, y::VecE;
-    _absx::Float64 = abs(x),
-    _absy::Float64 = abs(y),
-    _maxeps::Float64 = max(eps(_absx), eps(_absy)),
+function Base.isapprox(a::VecE, b::VecE;
+    _absa::Float64 = abs(a),
+    _absb::Float64 = abs(b),
+    _maxeps::Float64 = max(eps(_absa), eps(_absb)),
     rtol::Real=cbrt(_maxeps),
     atol::Real=sqrt(_maxeps)
     )
 
-    dist2(x, y) <= atol + rtol*max(_absx, _absy)
+    dist2(a, b) <= atol + rtol*max(_absa, _absb)
 end
 
 include("geomE2.jl")

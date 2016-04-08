@@ -86,7 +86,7 @@ function closest_approach_distance_ray_ray(P::VecSE2, u::Float64, Q::VecSE2, v::
     abs(Pf - Qf)
 end
 function closest_time_of_approach_and_distance(P::VecSE2, u::Float64, Q::VecSE2, v::Float64)
-    t_PCA = closest_time_of_approach_ray_ray(P, u, Q, v)
-    d_PCA = closest_approach_distance_ray_ray(P, u, Q, v, t_PCA)
-    (t_PCA, d_PCA)
+    t_CPA = closest_time_of_approach_ray_ray(P, u, Q, v)
+    d_CPA = closest_approach_distance_ray_ray(P, u, Q, v, t_CPA)
+    (t_CPA, d_CPA)
 end

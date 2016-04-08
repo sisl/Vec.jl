@@ -49,6 +49,7 @@ function Base.isapprox(a::VecE, b::VecE;
 
     dist2(a, b) <= atol + rtol*max(_absa, _absb)
 end
+lerp(a::Real, b::Real, t::AbstractFloat) = a + (b-a)*t
 
 include("geomE2.jl")
 include("coordinate_transforms.jl")

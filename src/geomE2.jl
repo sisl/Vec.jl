@@ -4,8 +4,9 @@ Geometry in 2d euclidean space
 
 # signed delta angle
 deltaangle( a::Real, b::Real ) = atan2(sin(a-b), cos(a-b))
+
 # distance between two angles
-angledist( a::Real, b::Real ) = abs(tan2(sin(a-b), cos(a-b)))
+angledist( a::Real, b::Real ) = abs(deltaangle(a,b))
 
 function inertial2body(point::VecE2, reference::VecSE2)
 
@@ -54,4 +55,38 @@ function body2inertial(point::VecSE2, reference::VecSE2)
 
     c, s = cos(reference.θ), sin(reference.θ)
     VecSE2(c*point.x -s*point.y + reference.x, s*point.x +c*point.y + reference.y, reference.θ + point.θ)
+end
+
+export
+    ray_future_position,
+    closest_time_of_approach_ray_ray,
+    closest_approach_distance_ray_ray,
+    closest_time_of_approach_and_distance
+
+ray_future_position(P::VecSE2, v::Float64, Δt::Float64) = (convert(VecE2, P) + polar(v*Δt, P.θ))::VecE2
+function closest_time_of_approach_ray_ray(P::VecSE2, u::Float64, Q::VecSE2, v::Float64)
+
+    # the time at which the two rays are closest to one another
+    # a negative value indicates that this occurred in the past
+    # see: http://geomalgorithms.com/a07-_distance.html
+
+    W = convert(VecE2, P) - convert(VecE2, Q)
+    Δ = polar(u, P.θ) - polar(v, Q.θ)
+    aΔ = abs2(Δ)
+
+    if aΔ == 0.0
+        0.0
+    else
+        -dot(W, Δ) / abs2(Δ)
+    end
+end
+function closest_approach_distance_ray_ray(P::VecSE2, u::Float64, Q::VecSE2, v::Float64, t_CPA::Float64=closest_time_of_approach_ray_ray(P, u, Q, v))
+    Pf = ray_future_position(P, u, t_CPA)
+    Qf = ray_future_position(Q, v, t_CPA)
+    abs(Pf - Qf)
+end
+function closest_time_of_approach_and_distance(P::VecSE2, u::Float64, Q::VecSE2, v::Float64)
+    t_PCA = closest_time_of_approach_ray_ray(P, u, Q, v)
+    d_PCA = closest_approach_distance_ray_ray(P, u, Q, v, t_PCA)
+    (t_PCA, d_PCA)
 end

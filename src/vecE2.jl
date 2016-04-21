@@ -25,6 +25,7 @@ Base.(:(+))(a::VecE2, b::Real)  = VecE2(a.x+b, a.y+b)
 Base.(:(+))(b::Real,  a::VecE2) = VecE2(a.x+b, a.y+b)
 Base.(:(+))(a::VecE2, b::VecE2) = VecE2(a.x+b.x, a.y+b.y)
 
+Base.(:(-))(a::VecE2)  = VecE2(-a.x, -a.y)
 Base.(:(-))(a::VecE2, b::Real)  = VecE2(a.x-b, a.y-b)
 Base.(:(-))(a::VecE2, b::VecE2) = VecE2(a.x-b.x, a.y-b.y)
 
@@ -68,6 +69,7 @@ function dist2(a::VecE2, b::VecE2)
 end
 
 Base.dot(a::VecE2, b::VecE2) = a.x*b.x + a.y*b.y
+Base.cross(a::VecE2, b::VecE2) = a.x*b.y - a.y*b.x
 proj(a::VecE2, b::VecE2, ::Type{Float64}) = (a.x*b.x + a.y*b.y) / hypot(b.x, b.y) # dot(a,b) / |b|
 function proj(a::VecE2, b::VecE2, ::Type{VecE2})
     # dot(a,b) / dot(b,b) ⋅ b

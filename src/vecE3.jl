@@ -24,6 +24,7 @@ Base.show(io::IO, a::VecE3) = @printf(io, "VecE3(%.3f, %.3f, %.3f)", a.x, a.y, a
 Base.(:(+))(a::VecE3, b::Real) = VecE3(a.x+b, a.y+b, a.z+b)
 Base.(:(+))(a::VecE3, b::VecE3) = VecE3(a.x+b.x, a.y+b.y, a.z+b.z)
 
+Base.(:(-))(a::VecE3) = VecE3(-a.x, -a.y, -a.z)
 Base.(:(-))(a::VecE3, b::Real) = VecE3(a.x-b, a.y-b, a.z-b)
 Base.(:(-))(a::VecE3, b::VecE3) = VecE3(a.x-b.x, a.y-b.y, a.z-b.z)
 

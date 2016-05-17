@@ -32,6 +32,7 @@ Base.(:(+))(a::VecSE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ+b.θ)
 Base.(:(-))(b::Real, a::VecSE2) = VecSE2(b-a.x, b-a.y, a.θ)
 Base.(:(-))(a::VecSE2, b::Real) = VecSE2(a.x-b, a.y-b, a.θ)
 Base.(:(-))(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
+Base.(:(-))(a::VecE2,  b::VecSE2) = VecE2(a.x-b.x, a.y-b.y)
 Base.(:(-))(a::VecSE2, b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ-b.θ)
 Base.(:(-))(a::VecE2, b::VecSE2) = VecE2(a.x-b.x, a.y-b.y)
 Base.(:(-))(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
@@ -72,7 +73,7 @@ function Base.norm(a::VecSE2)
     VecSE2(a.x/m, a.y/m)
 end
 
-Base.atan2(a::VecSE2) = atan2(a.x, a.y)
+Base.atan2(a::VecSE2) = atan2(a.y, a.x)
 
 lerp(a::VecSE2, b::VecSE2, t::Real) = VecSE2(a.x + (b.x-a.x)*t, a.y + (b.y-a.y)*t, a.θ + (b.θ-a.θ)*t)
 

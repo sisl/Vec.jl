@@ -35,6 +35,8 @@ abstract AbstractVec
 abstract VecE <: AbstractVec
 abstract VecSE <: AbstractVec
 
+lerp(a::Real, b::Real, t::Real) = a + (b-a)*t
+
 include("vecE2.jl")
 include("vecE3.jl")
 include("vecSE2.jl")

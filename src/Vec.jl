@@ -18,6 +18,7 @@ export
            # proj(a::vec, b::vec, ::Type{Vec}) will do vector projection of a onto b
 
     lerp,  # linear interpolation between two vec's
+    lerp_angle,
 
     dist,  # scalar distance between two vec's
     dist2, # squared scalar distance between two vec's

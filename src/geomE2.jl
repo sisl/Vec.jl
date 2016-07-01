@@ -2,11 +2,20 @@
 Geometry in 2d euclidean space
 =#
 
-# signed delta angle
-deltaangle( a::Real, b::Real ) = atan2(sin(a-b), cos(a-b))
+"""
+deltaangle(a::Real, b::Real)
+
+Return the minimum δ such that
+    a + δ = mod(b, 2π)
+"""
+deltaangle(a::Real, b::Real) = atan2(sin(b-a), cos(b-a))
 
 # distance between two angles
 angledist( a::Real, b::Real ) = abs(deltaangle(a,b))
+
+# linear interpolation between angles
+lerp_angle(a::Real, b::Real, t::AbstractFloat) = a + deltaangle(a, b)*t
+
 
 function inertial2body(point::VecE2, reference::VecSE2)
 

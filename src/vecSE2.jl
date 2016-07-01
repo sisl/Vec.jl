@@ -75,7 +75,12 @@ end
 
 Base.atan2(a::VecSE2) = atan2(a.y, a.x)
 
-lerp(a::VecSE2, b::VecSE2, t::Real) = VecSE2(a.x + (b.x-a.x)*t, a.y + (b.y-a.y)*t, a.θ + (b.θ-a.θ)*t)
+function lerp(a::VecSE2, b::VecSE2, t::Real)
+    x = a.x + (b.x-a.x)*t
+    y = a.y + (b.y-a.y)*t
+    θ = lerp_angle(a.θ, b.θ, t)
+    VecSE2(x, y, θ)
+end
 
 Base.rot180(a::VecSE2) = VecSE2(a.x, a.y, a.θ+π)
 Base.rotl90(a::VecSE2) = VecSE2(a.x, a.y, a.θ+0.5π)

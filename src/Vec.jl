@@ -2,6 +2,8 @@ VERSION >= v"0.4.0-dev+6521" && __precompile__(true)
 
 module Vec
 
+using Compat
+
 export
     AbstractVec,
     VecE,  # an abstract euclidean-group vector

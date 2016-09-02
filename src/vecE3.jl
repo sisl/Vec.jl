@@ -48,6 +48,7 @@ Base.round(a::VecE3) = VecE3(round(a.x), round(a.y), round(a.z))
 Base.floor(a::VecE3) = VecE3(floor(a.x), floor(a.y), floor(a.z))
 Base.ceil(a::VecE3) = VecE3(ceil(a.x), ceil(a.y), ceil(a.z))
 Base.trunc(a::VecE3) = VecE3(trunc(a.x), trunc(a.y), trunc(a.z))
+Base.clamp(a::VecE3, lo::Real, hi::Real) = VecE3(clamp(a.x, lo, hi), clamp(a.y, lo, hi), clamp(a.z, lo, hi))
 
 Base.abs(a::VecE3) = sqrt(a.x*a.x + a.y*a.y + a.z*a.z)
 Base.abs2(a::VecE3) = a.x*a.x + a.y*a.y + a.z*a.z

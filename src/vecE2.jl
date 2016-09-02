@@ -50,6 +50,7 @@ Base.round(a::VecE2) = VecE2(round(a.x), round(a.y))
 Base.floor(a::VecE2) = VecE2(floor(a.x), floor(a.y))
 Base.ceil(a::VecE2) = VecE2(ceil(a.x), ceil(a.y))
 Base.trunc(a::VecE2) = VecE2(trunc(a.x), trunc(a.y))
+Base.clamp(a::VecE2, lo::Real, hi::Real) = VecE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi))
 
 Base.abs(a::VecE2) = hypot(a.x, a.y)
 Base.hypot(a::VecE2) = hypot(a.x, a.y)

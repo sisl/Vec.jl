@@ -76,6 +76,9 @@ b = VecE3(0.5,2.0,-3.0)
 @test trunc(VecE3(0.25,1.75,0.0)) == VecE3(0.0,1.0,0.0)
 @test trunc(VecE3(-0.25,-1.75,0.0)) == VecE3(-0.0,-1.0,0.0)
 
+@test clamp(VecE3(1.0, 10.0, 0.5), 0.0, 5.0) == VecE3(1.0, 5.0, 0.5)
+@test clamp(VecE3(-1.0, 4.0, 5.5), 0.0, 5.0) == VecE3(0.0, 4.0, 5.0)
+
 c = VecE3(3.0,4.0,5.0)
 
 @test isapprox(abs(a), hypot(1.0,2.0))

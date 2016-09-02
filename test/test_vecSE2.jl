@@ -61,6 +61,9 @@ b = VecSE2(0.5,2.0,-π)
 
 @test a % 2.0 == VecSE2(0.0, 1.0, π/2)
 
+@test clamp(VecSE2(1.0, 10.0, 0.5), 0.0, 5.0) == VecSE2(1.0, 5.0, 0.5)
+@test clamp(VecSE2(-1.0, 4.0, 5.5), 0.0, 5.0) == VecSE2(0.0, 4.0, 5.5)
+
 @test isfinite(a)
 @test !isfinite(VecSE2(Inf,0))
 @test !isfinite(VecSE2(0,Inf))

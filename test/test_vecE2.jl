@@ -73,6 +73,9 @@ b = VecE2(0.5,2.0)
 @test trunc(VecE2(0.25,1.75)) == VecE2(0.0,1.0)
 @test trunc(VecE2(-0.25,-1.75)) == VecE2(-0.0,-1.0)
 
+@test clamp(VecE2(1.0, 10.0), 0.0, 5.0) == VecE2(1.0, 5.0)
+@test clamp(VecE2(-1.0, 4.0), 0.0, 5.0) == VecE2(0.0, 4.0)
+
 c = VecE2(3.0,4.0)
 
 @test isapprox(abs(a), 1.0)

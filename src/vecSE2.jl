@@ -47,6 +47,8 @@ Base.show(io::IO, a::VecSE2) = @printf(io, "VecSE2({%.3f, %.3f}, %.3f)", a.x, a.
 
 @compat Base.:%(a::VecSE2, b::Real) = VecSE2(a.x%b, a.y%b, a.θ)
 
+Base.clamp(a::VecSE2, lo::Real, hi::Real) = VecSE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi), a.θ)
+
 @compat Base.:(==)(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
 Base.isequal(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
 function Base.isapprox(a::VecSE2, b::VecSE2;

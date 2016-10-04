@@ -145,11 +145,11 @@ type UTM <: AbstractCoordinate
     zone::Int # UTM zone (∈ 1:60)
 end
 Base.convert(::Type{VecE3}, p::UTM) = VecE3(p.e, p.n, p.u)
-function Base.(:(+))(a::UTM, b::UTM)
+function Base.:+(a::UTM, b::UTM)
     @assert(a.zone == b.zone)
     UTM(a.e+b.e, a.n+b.n, a.u+b.u, a.zone)
 end
-function Base.(:(-))(a::UTM, b::UTM)
+function Base.:-(a::UTM, b::UTM)
     @assert(a.zone == b.zone)
     UTM(a.e-b.e, a.n-b.n, a.u-b.u, a.zone)
 end
@@ -165,8 +165,8 @@ type ENU <: AbstractCoordinate
 end
 Base.convert(::Type{VecE3}, p::ENU) = VecE3(p.e, p.n, p.u)
 Base.convert(::Type{ENU}, p::VecE3) = ENU(p.x, p.y, p.z)
-Base.(:(+))(a::ENU, b::ENU) = ENU(a.e+b.e, a.n+b.n, a.u+b.u)
-Base.(:(-))(a::ENU, b::ENU) = ENU(a.e-b.e, a.n-b.n, a.u-b.u)
+Base.:+(a::ENU, b::ENU) = ENU(a.e+b.e, a.n+b.n, a.u+b.u)
+Base.:-(a::ENU, b::ENU) = ENU(a.e-b.e, a.n-b.n, a.u-b.u)
 
 ###################
 

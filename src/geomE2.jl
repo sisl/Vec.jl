@@ -16,6 +16,13 @@ angledist( a::Real, b::Real ) = abs(deltaangle(a,b))
 # linear interpolation between angles
 lerp_angle(a::Real, b::Real, t::AbstractFloat) = a + deltaangle(a, b)*t
 
+# true if the values are collinear within a tolerance
+function are_collinear(a::AbstractVec, b::AbstractVec, c::AbstractVec, tol::Float64=1e-8)
+    # http://mathworld.wolfram.com/Collinear.html
+    # if val = 0 then they are collinear
+    val = a.x*(b.y-c.y) + b.x*(c.y-a.y)+c.x*(a.y-b.y)
+    abs(val) < tol
+end
 
 function inertial2body(point::VecE2, reference::VecSE2)
 
@@ -98,4 +105,24 @@ function closest_time_of_approach_and_distance(P::VecSE2, u::Float64, Q::VecSE2,
     t_CPA = closest_time_of_approach_ray_ray(P, u, Q, v)
     d_CPA = closest_approach_distance_ray_ray(P, u, Q, v, t_CPA)
     (t_CPA, d_CPA)
+end
+function get_intersection(rayA::VecSE2, rayB::VecSE2)
+
+    as = convert(VecE2, rayA)
+    bs = convert(VecE2, rayB)
+    ad = polar(1.0, rayA.θ)
+    bd = polar(1.0, rayB.θ)
+
+    dx = bs.x - as.x
+    dy = bs.y - as.y
+    det = bd.x * ad.y - bd.y * ad.x
+    if det != 0.0 # no intersection
+        u = (dy * bd.x - dx * bd.y) / det
+        v = (dy * ad.x - dx * ad.y) / det
+        if u > 0.0 && v > 0.0
+            return as + u*ad
+        end
+    end
+
+    VecE2(NaN,NaN) # no intersection
 end

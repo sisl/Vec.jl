@@ -32,7 +32,10 @@ export
     angledist,  # distance between two angles
 
     inertial2body,
-    body2inertial
+    body2inertial,
+
+    are_collinear,
+    get_intersection
 
 abstract AbstractVec
 abstract VecE <: AbstractVec

@@ -39,3 +39,17 @@ t_PCA, d_PCA = closest_time_of_approach_and_distance(VecSE2(0.0,-0.0,0.2), 1.0, 
 @test isapprox(d_PCA, 0.0)
 
 @test isapprox(get_intersection(VecSE2(-1,0,0), VecSE2(0,-1,π/2)), VecE2(0.0,0.0))
+
+@test intersects(VecSE2(0,0,0), VecSE2(1,-1,π/2))
+@test !intersects(VecSE2(0,0,0), VecSE2(1,-1,-π/2))
+# @test intersects(VecSE2(0,0,0), VecSE2(1,0,0))
+
+@test  contains(Circ(0,0,1.0), VecE2(0,0))
+@test !contains(Circ(2,0,1.0), VecE2(0,0))
+@test  contains(Circ(2,0,1.0), VecE2(1.5,0))
+
+box = AABB(VecE2(-1.0, -2.0), VecE2(1.0, 3.0))
+@test  contains(box, VecE2( 0.0,0.0))
+@test  contains(box, VecE2(-1.0,0.0))
+@test !contains(box, VecE2(-2.0,0.0))
+@test !contains(box, VecE2( 1.0,3.1))

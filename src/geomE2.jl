@@ -77,7 +77,9 @@ export
     ray_future_position,
     closest_time_of_approach_ray_ray,
     closest_approach_distance_ray_ray,
-    closest_time_of_approach_and_distance
+    closest_time_of_approach_and_distance,
+    intersects,      # true if A and B intersect
+    get_intersection # returns VecE2 of where intersection occurs, and VecE2(NaN,NaN) otherwise
 
 ray_future_position(P::VecSE2, v::Float64, Δt::Float64) = (convert(VecE2, P) + polar(v*Δt, P.θ))::VecE2
 function closest_time_of_approach_ray_ray(P::VecSE2, u::Float64, Q::VecSE2, v::Float64)
@@ -106,6 +108,24 @@ function closest_time_of_approach_and_distance(P::VecSE2, u::Float64, Q::VecSE2,
     d_CPA = closest_approach_distance_ray_ray(P, u, Q, v, t_CPA)
     (t_CPA, d_CPA)
 end
+function intersects(rayA::VecSE2, rayB::VecSE2)
+    as = convert(VecE2, rayA)
+    bs = convert(VecE2, rayB)
+    ad = polar(1.0, rayA.θ)
+    bd = polar(1.0, rayB.θ)
+
+    dx = bs.x - as.x
+    dy = bs.y - as.y
+    det = bd.x * ad.y - bd.y * ad.x
+
+    if det == 0.0
+        return false
+    end
+
+    u = (dy * bd.x - dx * bd.y) / det
+    v = (dy * ad.x - dx * ad.y) / det
+    return u > 0.0 && v > 0.0
+end
 function get_intersection(rayA::VecSE2, rayB::VecSE2)
 
     as = convert(VecE2, rayA)
@@ -124,5 +144,54 @@ function get_intersection(rayA::VecSE2, rayB::VecSE2)
         end
     end
 
+    # TODO - if det == 0 could be the case that they are colinear, and the first point of intersection should be taken
+
     VecE2(NaN,NaN) # no intersection
+end
+
+export
+    Circ,
+    AABB,
+    AABB_center_length_width,
+    OBB
+
+immutable Circ{V<:AbstractVec}
+    c::V # center
+    r::Float64 # radius
+end
+Circ(x::Real, y::Real, r::Real) = Circ{VecE2}(VecE2(x, y), r)
+Circ(x::Real, y::Real, z::Real, r::Real) = Circ{VecE3}(VecE3(x, y, z), r)
+
+Base.contains{V}(circ::Circ{V}, p::V) = abs2(circ.c - p) ≤ circ.r*circ.r
+
+# Axis-Aligned Bounding Box
+immutable AABB{V<:AbstractVec}
+    bot_left::V
+    top_right::V
+end
+AABB(bot_left::VecE2, top_right::VecE2) = AABB{VecE2}(bot_left, top_right)
+function AABB_center_length_width(center::VecE2, length::Real, width::Real)
+    del = VecE2(length/2, width/2)
+    AABB(center - del, center + del)
+end
+
+function Base.contains(box::AABB{VecE2}, P::VecE2)
+    box.bot_left.x ≤ P.x ≤ box.top_right.x &&
+    box.bot_left.y ≤ P.y ≤ box.top_right.y
+end
+
+# Oriented Bounding Box
+immutable OBB
+    aabb::AABB{VecE2}
+    θ::Float64
+end
+function OBB(center::VecE2, len::Float64, wid::Float64, θ::Float64)
+    del = VecE2(len/2, wid/2)
+    bot_left = center - del
+    top_right = center + del
+    OBB(AABB(bot_left, top_right), θ)
+end
+function Base.contains(box::OBB, P::VecE2)
+    C = 0.5*(box.aabb.bot_left + box.aabb.top_right)
+    contains(box.aabb, rot(P-C, -box.θ)+C)
 end

@@ -162,7 +162,11 @@ end
 Circ(x::Real, y::Real, r::Real) = Circ{VecE2}(VecE2(x, y), r)
 Circ(x::Real, y::Real, z::Real, r::Real) = Circ{VecE3}(VecE3(x, y, z), r)
 
+@compat Base.:+(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c + v, circ.r)
+@compat Base.:-(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c - v, circ.r)
+
 Base.contains{V}(circ::Circ{V}, p::V) = abs2(circ.c - p) ≤ circ.r*circ.r
+inertial2body(circ::Circ{VecE2}, reference::VecSE2) = Circ{VecE2}(inertial2body(circ.c, reference), circ.r)
 
 # Axis-Aligned Bounding Box
 immutable AABB{V<:AbstractVec}
@@ -175,10 +179,14 @@ function AABB_center_length_width(center::VecE2, length::Real, width::Real)
     AABB(center - del, center + del)
 end
 
+@compat Base.:+(box::AABB{VecE2}, v::VecE2) = AABB{VecE2}(box.bot_left + v, box.top_right + v)
+@compat Base.:-(box::AABB{VecE2}, v::VecE2) = AABB{VecE2}(box.bot_left - v, box.top_right - v)
+
 function Base.contains(box::AABB{VecE2}, P::VecE2)
     box.bot_left.x ≤ P.x ≤ box.top_right.x &&
     box.bot_left.y ≤ P.y ≤ box.top_right.y
 end
+
 
 # Oriented Bounding Box
 immutable OBB
@@ -191,7 +199,21 @@ function OBB(center::VecE2, len::Float64, wid::Float64, θ::Float64)
     top_right = center + del
     OBB(AABB(bot_left, top_right), θ)
 end
+OBB(center::VecSE2, len::Float64, wid::Float64) = OBB(convert(VecE2, center), len, wid, center.θ)
+
+@compat Base.:+(box::OBB, v::VecE2) = OBB(box.aabb+v, box.θ)
+@compat Base.:-(box::OBB, v::VecE2) = OBB(box.aabb-v, box.θ)
+
 function Base.contains(box::OBB, P::VecE2)
     C = 0.5*(box.aabb.bot_left + box.aabb.top_right)
     contains(box.aabb, rot(P-C, -box.θ)+C)
+end
+
+function inertial2body(box::OBB, reference::VecSE2)
+    c = (box.aabb.bot_left + box.aabb.top_right)/2
+    c = VecSE2(c.x, c.y, box.θ)
+    c′ = inertial2body(c, reference)
+    len = box.aabb.top_right.x - box.aabb.bot_left.x
+    wid = box.aabb.top_right.y - box.aabb.bot_left.y
+    OBB(c′, len, wid)
 end

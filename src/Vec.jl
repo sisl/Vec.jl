@@ -35,7 +35,11 @@ export
     body2inertial,
 
     are_collinear,
-    get_intersection
+    get_intersection,
+
+    Circ,
+    AABB,
+    OBB
 
 abstract AbstractVec
 abstract VecE <: AbstractVec

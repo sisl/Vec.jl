@@ -169,18 +169,19 @@ Base.contains{V}(circ::Circ{V}, p::V) = abs2(circ.c - p) ≤ circ.r*circ.r
 inertial2body(circ::Circ{VecE2}, reference::VecSE2) = Circ{VecE2}(inertial2body(circ.c, reference), circ.r)
 
 # Axis-Aligned Bounding Box
-immutable AABB{V<:AbstractVec}
-    bot_left::V
-    top_right::V
+immutable AABB
+    center::VecE2
+    len::Float64 # length along x axis
+    wid::Float64 # width along y axis
 end
-AABB(bot_left::VecE2, top_right::VecE2) = AABB{VecE2}(bot_left, top_right)
-function AABB_center_length_width(center::VecE2, length::Real, width::Real)
-    del = VecE2(length/2, width/2)
-    AABB(center - del, center + del)
+function AABB(bot_left::VecE2, top_right::VecE2)
+    center = (bot_left + top_right)/2
+    Δ = top_right - bot_left
+    return AABB(center, abs(Δ.x), abs(Δ.y))
 end
 
-@compat Base.:+(box::AABB{VecE2}, v::VecE2) = AABB{VecE2}(box.bot_left + v, box.top_right + v)
-@compat Base.:-(box::AABB{VecE2}, v::VecE2) = AABB{VecE2}(box.bot_left - v, box.top_right - v)
+@compat Base.:+(box::AABB, v::VecE2) = AABB(box.center + v, box.len, box.wid)
+@compat Base.:-(box::AABB, v::VecE2) = AABB(box.center - v, box.len, box.wid)
 
 function Base.contains(box::AABB{VecE2}, P::VecE2)
     box.bot_left.x ≤ P.x ≤ box.top_right.x &&
@@ -190,7 +191,7 @@ end
 
 # Oriented Bounding Box
 immutable OBB
-    aabb::AABB{VecE2}
+    aabb::AABB
     θ::Float64
 end
 function OBB(center::VecE2, len::Float64, wid::Float64, θ::Float64)

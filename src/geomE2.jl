@@ -183,9 +183,9 @@ end
 @compat Base.:+(box::AABB, v::VecE2) = AABB(box.center + v, box.len, box.wid)
 @compat Base.:-(box::AABB, v::VecE2) = AABB(box.center - v, box.len, box.wid)
 
-function Base.contains(box::AABB{VecE2}, P::VecE2)
-    box.bot_left.x ≤ P.x ≤ box.top_right.x &&
-    box.bot_left.y ≤ P.y ≤ box.top_right.y
+function Base.contains(box::AABB, P::VecE2)
+    -box.len/2 ≤ P.x - box.center.x ≤ box.len/2 &&
+    -box.wid/2 ≤ P.y - box.center.y ≤ box.wid/2
 end
 
 
@@ -196,9 +196,7 @@ immutable OBB
 end
 function OBB(center::VecE2, len::Float64, wid::Float64, θ::Float64)
     del = VecE2(len/2, wid/2)
-    bot_left = center - del
-    top_right = center + del
-    OBB(AABB(bot_left, top_right), θ)
+    return OBB(AABB(center, len, wid), θ)
 end
 OBB(center::VecSE2, len::Float64, wid::Float64) = OBB(convert(VecE2, center), len, wid, center.θ)
 
@@ -206,7 +204,7 @@ OBB(center::VecSE2, len::Float64, wid::Float64) = OBB(convert(VecE2, center), le
 @compat Base.:-(box::OBB, v::VecE2) = OBB(box.aabb-v, box.θ)
 
 function Base.contains(box::OBB, P::VecE2)
-    C = 0.5*(box.aabb.bot_left + box.aabb.top_right)
+    C = box.aabb.center
     contains(box.aabb, rot(P-C, -box.θ)+C)
 end
 

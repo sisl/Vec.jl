@@ -48,8 +48,27 @@ t_PCA, d_PCA = closest_time_of_approach_and_distance(VecSE2(0.0,-0.0,0.2), 1.0, 
 @test !contains(Circ(2,0,1.0), VecE2(0,0))
 @test  contains(Circ(2,0,1.0), VecE2(1.5,0))
 
+box = AABB(VecE2(0.0, 0.5), 2.0, 5.0)
+@test  contains(box, VecE2( 0.0,0.0))
+@test  contains(box, VecE2(-1.0,0.0))
+@test !contains(box, VecE2(-2.0,0.0))
+@test !contains(box, VecE2( 1.0,3.1))
+
 box = AABB(VecE2(-1.0, -2.0), VecE2(1.0, 3.0))
 @test  contains(box, VecE2( 0.0,0.0))
 @test  contains(box, VecE2(-1.0,0.0))
 @test !contains(box, VecE2(-2.0,0.0))
 @test !contains(box, VecE2( 1.0,3.1))
+
+box = OBB(VecSE2(0.0, 0.5, 0.0), 2.0, 5.0)
+@test  contains(box, VecE2( 0.0,0.0))
+@test  contains(box, VecE2(-1.0,0.0))
+@test !contains(box, VecE2(-2.0,0.0))
+@test !contains(box, VecE2( 1.0,3.1))
+
+box = OBB(VecSE2(0.0, 0.0, π/4), 2.0, 2.0)
+@test  contains(box, VecE2( 0.0,0.0))
+@test  contains(box, VecE2( 1.0,0.0))
+@test  contains(box, VecE2( √2/2-0.1,√2/2-0.1))
+@test !contains(box, VecE2( 1.0,1.0))
+@test !contains(box, VecE2( √2/2+0.1,√2/2+0.1))

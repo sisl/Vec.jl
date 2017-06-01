@@ -55,11 +55,27 @@ let
     @test get_side(L, VecE2(1,0)) == -1
 end
 
-@test isapprox(intersect(Ray(-1,0,0), Ray(0,-1,π/2)), VecE2(0.0,0.0))
+let
+    @test isapprox(intersect(Ray(-1,0,0), Ray(0,-1,π/2)), VecE2(0.0,0.0))
 
-@test  intersects(Ray(0,0,0), Ray(1,-1,π/2))
-@test !intersects(Ray(0,0,0), Ray(1,-1,-π/2))
-# @test  intersects(Ray(0,0,0), Ray(1,0,0)) # TODO: get this to work
+    @test  intersects(Ray(0,0,0), Ray(1,-1,π/2))
+    @test !intersects(Ray(0,0,0), Ray(1,-1,-π/2))
+    # @test  intersects(Ray(0,0,0), Ray(1,0,0)) # TODO: get this to work
+
+    @test  intersects(Ray(0,0,0), Line(VecE2(0,0), VecE2(1,1)))
+    @test !intersects(Ray(0,0,0), Line(VecE2(0,1), VecE2(1,1)))
+    @test  intersects(Ray(0,0,0), Line(VecE2(1,0), VecE2(2,0)))
+    @test  intersects(Ray(0,0,0), Line(VecE2(1,-1), VecE2(1,1)))
+    @test  intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(1,1)))
+    @test !intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(-1,2)))
+    @test  intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(-1.5,1.5)))
+
+    @test  intersects(Ray(0,0,0), LineSegment(VecE2(0,0), VecE2(1,1)))
+    @test !intersects(Ray(0,0,0), LineSegment(VecE2(0,1), VecE2(1,1)))
+    @test  intersects(Ray(0,0,0), LineSegment(VecE2(1,0), VecE2(2,0)))
+    @test !intersects(Ray(0,0,0), LineSegment(VecE2(-1,0), VecE2(-2,0)))
+end
+
 
 proj1 = Projectile(VecSE2(0.0,0.0,0.0), 1.0)
 proj2 = Projectile(VecSE2(1.0,1.0,1.0), 1.0)

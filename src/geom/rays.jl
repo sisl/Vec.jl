@@ -22,6 +22,45 @@ function intersects(A::Ray, B::Ray)
     v = (dy * ad.x - dx * ad.y) / det
     return u > 0.0 && v > 0.0
 end
+function intersects(ray::Ray, line::Line)
+    v₁ = VecE2(ray) - line.A
+    v₂ = line.B - line.A
+    v₃ = polar(1.0, ray.θ + π/2)
+
+    denom = dot(v₂, v₃)
+
+    if !(denom ≈ 0.0)
+        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
+        # t₂ = dot(v₁, v₃) / denom # time for line can be anything
+        return 0 ≤ t₁
+    else
+        # denom is zero if the line and the ray are parallel
+        # only collide if they are perfectly aligned
+        return are_collinear(ray, line.A, line.B)
+    end
+end
+function intersects(ray::Ray, seg::LineSegment)
+    R = VecE2(ray)
+    v₁ = VecE2(R) - seg.A
+    v₂ = seg.B - seg.A
+    v₃ = polar(1.0, ray.θ + π/2)
+
+    denom = dot(v₂, v₃)
+
+    if !isapprox(denom, 0.0, atol=1e-10)
+        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
+        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        println(t₁, "  ", t₂)
+        return 0 ≤ t₁ && 0 ≤ t₂ ≤ 1
+    else
+        # denom is zero if the segment and the ray are parallel
+        # only collide if they are perfectly aligned
+        # must ensure that at least one point is in the positive ray direction
+        r = polar(1.0, ray.θ)
+        return are_collinear(R, seg.A, seg.B) &&
+               (dot(r, seg.A - R) ≥ 0 || dot(r, seg.B - R) ≥ 0)
+    end
+end
 
 """
 returns VecE2 of where intersection occurs, and VecE2(NaN,NaN) otherwise

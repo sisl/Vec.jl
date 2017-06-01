@@ -20,18 +20,21 @@
 @test !are_collinear(VecE2(0.0,0.0), VecE2(1.0,0.0), VecE2(0.0,1.0))
 
 let
-    L = Line(VecE2(0,0), VecE2(1,1))
+    L = Line(VecE2(0,0), π/4)
     L2 = L + VecE2(-1,1)
-    @test isapprox(L2.A, VecE2(-1,1))
-    @test isapprox(L2.B, VecE2( 0,2))
+    @test isapprox(L2.C, VecE2(-1,1))
+    @test isapprox(L2.θ, π/4)
     L2 = L - VecE2(-1,1)
-    @test isapprox(L2.A, VecE2(1,-1))
-    @test isapprox(L2.B, VecE2(2, 0))
+    @test isapprox(L2.C, VecE2(1,-1))
+    @test isapprox(L2.θ, π/4)
+    L2 = rot180(L)
+    @test isapprox(L2.θ, π/4 + π)
     @test isapprox(get_polar_angle(L), atan2(1,1))
     @test isapprox(get_distance(L, VecE2(0,0)), 0)
-    @test isapprox(get_distance(L, VecE2(1,1)), 0)
+    @test isapprox(get_distance(L, VecE2(1,1)), 0, atol=1e-10)
     @test isapprox(get_distance(L, VecE2(1,0)), √2/2)
     @test isapprox(get_distance(L, VecE2(0,1)), √2/2)
+    @test get_side(L, VecE2(0,0)) ==  0
     @test get_side(L, VecE2(1,1)) ==  0
     @test get_side(L, VecE2(0,1)) ==  1
     @test get_side(L, VecE2(1,0)) == -1
@@ -53,6 +56,21 @@ let
     @test get_side(L, VecE2(1,1)) ==  0
     @test get_side(L, VecE2(0,1)) ==  1
     @test get_side(L, VecE2(1,0)) == -1
+
+    @test angledist(L, L2) ≈ 0.0
+    @test parallel(L, L2)
+
+    L2 = LineSegment(VecE2(0,0), VecE2(-1,1))
+    @test angledist(L, L2) ≈ π/2
+    @test !parallel(L, L2)
+
+    L2 = LineSegment(VecE2(0,0), VecE2(1,-1))
+    @test angledist(L, L2) ≈ π/2
+    @test !parallel(L, L2)
+
+    L2 = LineSegment(VecE2(0,0), VecE2(1,-1)) + VecE2(5,-7)
+    @test angledist(L, L2) ≈ π/2
+    @test !parallel(L, L2)
 end
 
 let
@@ -62,10 +80,10 @@ let
     @test !intersects(Ray(0,0,0), Ray(1,-1,-π/2))
     # @test  intersects(Ray(0,0,0), Ray(1,0,0)) # TODO: get this to work
 
-    @test  intersects(Ray(0,0,0), Line(VecE2(0,0), VecE2(1,1)))
-    @test !intersects(Ray(0,0,0), Line(VecE2(0,1), VecE2(1,1)))
-    @test  intersects(Ray(0,0,0), Line(VecE2(1,0), VecE2(2,0)))
-    @test  intersects(Ray(0,0,0), Line(VecE2(1,-1), VecE2(1,1)))
+    @test  intersects(Ray(0,0,0),   Line(VecE2(0,0), VecE2(1,1)))
+    @test !intersects(Ray(0,0,0),   Line(VecE2(0,1), VecE2(1,1)))
+    @test  intersects(Ray(0,0,0),   Line(VecE2(1,0), VecE2(2,0)))
+    @test  intersects(Ray(0,0,0),   Line(VecE2(1,-1), VecE2(1,1)))
     @test  intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(1,1)))
     @test !intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(-1,2)))
     @test  intersects(Ray(0,0,π/2), Line(VecE2(-1,1), VecE2(-1.5,1.5)))
@@ -76,27 +94,52 @@ let
     @test !intersects(Ray(0,0,0), LineSegment(VecE2(-1,0), VecE2(-2,0)))
 end
 
+let
+    proj1 = Projectile(VecSE2(0.0,0.0,0.0), 1.0)
+    proj2 = Projectile(VecSE2(1.0,1.0,1.0), 1.0)
+    @test isapprox(VecE2(propagate(proj1, 2.0).pos), VecE2(2.0,0.0))
+    @test isapprox(VecE2(propagate(proj2, 0.0).pos), VecE2(1.0,1.0))
 
-proj1 = Projectile(VecSE2(0.0,0.0,0.0), 1.0)
-proj2 = Projectile(VecSE2(1.0,1.0,1.0), 1.0)
-@test isapprox(VecE2(propagate(proj1, 2.0).pos), VecE2(2.0,0.0))
-@test isapprox(VecE2(propagate(proj2, 0.0).pos), VecE2(1.0,1.0))
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,1.0,0.0), 1.0))
+    @test isapprox(t_PCA, 0.0)
+    @test isapprox(d_PCA, 1.0)
 
-t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,1.0,0.0), 1.0))
-@test isapprox(t_PCA, 0.0)
-@test isapprox(d_PCA, 1.0)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,2.0,0.0), 1.0))
+    @test isapprox(t_PCA, 0.0)
+    @test isapprox(d_PCA, 2.0)
 
-t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,2.0,0.0), 1.0))
-@test isapprox(t_PCA, 0.0)
-@test isapprox(d_PCA, 2.0)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,1.0,0.0), 2.0))
+    @test isapprox(t_PCA, 0.0)
+    @test isapprox(d_PCA, 1.0)
 
-t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, Projectile(VecSE2(0.0,1.0,0.0), 2.0))
-@test isapprox(t_PCA, 0.0)
-@test isapprox(d_PCA, 1.0)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(Projectile(VecSE2(0.0,-0.0,0.2), 1.0), Projectile(VecSE2(0.0,1.0,-0.2), 1.0))
+    @test t_PCA > 0.0
+    @test isapprox(d_PCA, 0.0)
 
-t_PCA, d_PCA = closest_time_of_approach_and_distance(Projectile(VecSE2(0.0,-0.0,0.2), 1.0), Projectile(VecSE2(0.0,1.0,-0.2), 1.0))
-@test t_PCA > 0.0
-@test isapprox(d_PCA, 0.0)
+    @test isapprox(get_intersection_time(proj1, LineSegment(VecE2(0, 0), VecE2(0,1))), 0.0)
+    @test isapprox(get_intersection_time(proj1, LineSegment(VecE2(1,-1), VecE2(1,1))), 1.0)
+    @test    isinf(get_intersection_time(proj1, LineSegment(VecE2(-1,0), VecE2(-1,1))))
+
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(0, 0), VecE2(0,1)))
+    @test isapprox(t_PCA, 0.0)
+    @test isapprox(d_PCA, 0.0)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(1,-1), VecE2(1,1)))
+    @test isapprox(t_PCA, 1.0)
+    @test isapprox(d_PCA, 0.0)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(1,0.5), VecE2(1,1)))
+    @test isapprox(t_PCA, 1.0)
+    @test isapprox(d_PCA, 0.5)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(1,-0.5), VecE2(1,-1)))
+    @test isapprox(t_PCA, 1.0)
+    @test isapprox(d_PCA, 0.5)
+    t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(1,-0.5), VecE2(2,-1)))
+    @test isapprox(t_PCA, 1.0)
+    @test isapprox(d_PCA, 0.5)
+    # t_PCA, d_PCA = closest_time_of_approach_and_distance(proj1, LineSegment(VecE2(-1,1), VecE2(1,1)))
+    # println((t_PCA, d_PCA ))
+    # @test isapprox(t_PCA, 0.0)
+    # @test isapprox(d_PCA, 1.0)
+end
 
 @test  contains(Circ(0,0,1.0), VecE2(0,0))
 @test !contains(Circ(2,0,1.0), VecE2(0,0))

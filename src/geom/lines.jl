@@ -5,21 +5,27 @@ export
     get_side
 
 immutable Line
-    A::VecE2
-    B::VecE2
+    C::VecE2
+    θ::Float64
 end
-Base.:-(line::Line, V::VecE2) = Line(line.A - V, line.B - V)
-Base.:+(line::Line, V::VecE2) = Line(line.A + V, line.B + V)
+Line(A::VecE2, B::VecE2) = Line((A+B)/2, atan2(B - A))
 
-get_polar_angle(line::Line) = mod2pi(atan2(line.B.y - line.A.y, line.B.x - line.A.x))
+Base.:-(line::Line, V::VecE2) = Line(line.C - V, line.θ)
+Base.:+(line::Line, V::VecE2) = Line(line.C + V, line.θ)
+
+get_polar_angle(line::Line) = line.θ
+rot(line::Line, Δθ::Float64) = Line(line.C, line.θ+Δθ)
+Base.rot180(line::Line) = rot(line, 1π)
+Base.rotl90(line::Line) = rot(line,  π/2)
+Base.rotr90(line::Line) = rot(line, -π/2)
 
 """
 The distance between the line and the point P
 """
 function get_distance(line::Line, P::VecE2)
 
-    ab = line.B - line.A
-    pb = P - line.A
+    ab = polar(1.0, line.θ)
+    pb = P - line.C
 
     denom = abs2(ab)
     if denom ≈ 0.0
@@ -27,12 +33,20 @@ function get_distance(line::Line, P::VecE2)
     end
 
     r = dot(ab, pb)/denom
-    return abs(P - (line.A + r*ab))
+    return abs(P - (line.C + r*ab))
 end
 
 
 """
-What side of the line you are on, based on A → B
+What side of the line you are on
 Is -1 if on the left, 1 if on the right, and 0 if on the line
 """
-get_side(line::Line, p::VecE2) = sign((line.B.x-line.A.x) * (p.y-line.A.y) - (line.B.y-line.A.y) * (p.x-line.A.x))
+function get_side(line::Line, p::VecE2, ε::Float64=1e-10)
+    ab = polar(1.0, line.θ)
+    signed_dist = ab.x*(p.y-line.C.y) - ab.y*(p.x-line.C.x)
+    if abs(signed_dist) < ε
+        return 0
+    else
+        return sign(signed_dist)
+    end
+end

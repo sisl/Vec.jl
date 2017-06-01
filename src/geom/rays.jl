@@ -22,9 +22,12 @@ function intersects(A::Ray, B::Ray)
     v = (dy * ad.x - dx * ad.y) / det
     return u > 0.0 && v > 0.0
 end
-function intersects(ray::Ray, line::Line)
-    v₁ = VecE2(ray) - line.A
-    v₂ = line.B - line.A
+function intersects(ray::Ray, line::Line;
+    ε::Float64 = 1e-10;
+    )
+
+    v₁ = VecE2(ray) - line.C
+    v₂ = polar(1.0, line.θ)
     v₃ = polar(1.0, ray.θ + π/2)
 
     denom = dot(v₂, v₃)
@@ -32,11 +35,11 @@ function intersects(ray::Ray, line::Line)
     if !(denom ≈ 0.0)
         t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
         # t₂ = dot(v₁, v₃) / denom # time for line can be anything
-        return 0 ≤ t₁
+        return -ε ≤ t₁
     else
         # denom is zero if the line and the ray are parallel
         # only collide if they are perfectly aligned
-        return are_collinear(ray, line.A, line.B)
+        return isapprox(angledist(ray, line), 0.0, atol=ε)
     end
 end
 function intersects(ray::Ray, seg::LineSegment)
@@ -50,7 +53,6 @@ function intersects(ray::Ray, seg::LineSegment)
     if !isapprox(denom, 0.0, atol=1e-10)
         t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
         t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
-        println(t₁, "  ", t₂)
         return 0 ≤ t₁ && 0 ≤ t₂ ≤ 1
     else
         # denom is zero if the segment and the ray are parallel
@@ -86,4 +88,13 @@ function Base.intersect(A::VecSE2, B::VecSE2)
     # TODO - if det == 0 could be the case that they are colinear, and the first point of intersection should be taken
 
     return VecE2(NaN,NaN) # no intersection
+end
+
+"""
+What side of the ray you are on
+Is -1 if on the left, 1 if on the right, and 0 if on the ray
+"""
+function get_side(ray::Ray, p::VecE2)
+    ab = polar(1.0, ray.θ)
+    return sign(ab.x*(p.y-ray.y) - ab.y*(p.x-ray.x))
 end

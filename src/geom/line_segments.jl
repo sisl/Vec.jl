@@ -1,5 +1,6 @@
 export
-    LineSegment
+    LineSegment,
+    parallel
 
 immutable LineSegment
     A::VecE2
@@ -40,3 +41,25 @@ end
 What side of the line you are on, based on A → B
 """
 get_side(seg::LineSegment, p::VecE2) = sign((seg.B.x-seg.A.x) * (p.y-seg.A.y) - (seg.B.y-seg.A.y) * (p.x-seg.A.x))
+
+
+"""
+The angular distance between the two line segments
+"""
+function angledist(segA::LineSegment, segB::LineSegment)
+    u = segA.B - segA.A
+    v = segB.B - segB.A
+    sqdenom = abs2(u)*abs2(v)
+    if isapprox(sqdenom, 0.0, atol=1e-10)
+        return NaN
+    end
+    return acos(dot(u,v) / sqrt(sqdenom))
+end
+
+"""
+True if the two segments are parallel
+"""
+function parallel(segA::LineSegment, segB::LineSegment, ε::Float64=1e-10)
+    θ = angledist(segA, segB)
+    return isapprox(θ, 0.0, atol=ε)
+end

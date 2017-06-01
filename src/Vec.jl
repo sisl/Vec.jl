@@ -63,7 +63,7 @@ function Base.isapprox(a::VecE, b::VecE;
 end
 lerp(a::Real, b::Real, t::AbstractFloat) = a + (b-a)*t
 
-include("geomE2.jl")
+include("geom/geom.jl")
 include("coordinate_transforms.jl")
 include("quat.jl")
 

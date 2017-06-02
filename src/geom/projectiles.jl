@@ -49,7 +49,7 @@ function get_intersection_time(A::Projectile, seg::LineSegment)
 
     denom = dot(v₂, v₃)
 
-    if abs(denom) > 0.0
+    if !isapprox(denom, 0.0, atol=1e-10)
         d₁ = cross(v₂, v₁) / denom # time for projectile (0 ≤ t₁)
         t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
         if 0.0 ≤ d₁ && 0.0 ≤ t₂ ≤ 1.0
@@ -61,7 +61,7 @@ function get_intersection_time(A::Projectile, seg::LineSegment)
         if are_collinear(A.pos, seg.A, seg.B)
             dist_a = abs2(seg.A - o)
             dist_b = abs2(seg.B - o)
-            return sqrt(min(dist_a, dist_b)) / ray_speed
+            return sqrt(min(dist_a, dist_b)) / A.v
         end
     end
 

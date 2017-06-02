@@ -60,7 +60,5 @@ end
 function inertial2body(box::OBB, reference::VecSE2)
     c = VecSE2(box.aabb.center, box.θ)
     c′ = inertial2body(c, reference)
-    len = box.aabb.top_right.x - box.aabb.bot_left.x
-    wid = box.aabb.top_right.y - box.aabb.bot_left.y
-    OBB(c′, len, wid)
+    OBB(c′, box.aabb.len, box.aabb.wid)
 end

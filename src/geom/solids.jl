@@ -58,8 +58,7 @@ function Base.contains(box::OBB, P::VecE2)
 end
 
 function inertial2body(box::OBB, reference::VecSE2)
-    c = (box.aabb.bot_left + box.aabb.top_right)/2
-    c = VecSE2(c.x, c.y, box.θ)
+    c = VecSE2(box.aabb.center, box.θ)
     c′ = inertial2body(c, reference)
     len = box.aabb.top_right.x - box.aabb.bot_left.x
     wid = box.aabb.top_right.y - box.aabb.bot_left.y

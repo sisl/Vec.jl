@@ -20,6 +20,47 @@
 @test !are_collinear(VecE2(0.0,0.0), VecE2(1.0,0.0), VecE2(0.0,1.0))
 
 let
+    seg = LineSegment1D(0,1)
+    seg2 = seg + 0.5
+    @test isapprox(seg2.a, 0.5)
+    @test isapprox(seg2.b, 1.5)
+
+    seg2 = seg - 0.3
+    @test isapprox(seg2.a, -0.3)
+    @test isapprox(seg2.b,  0.7)
+
+    seg = LineSegment1D(2,5)
+    @test isapprox(get_distance(seg, 1.5), 0.5)
+    @test isapprox(get_distance(seg, -1.5), 3.5)
+    @test isapprox(get_distance(seg,  2.5), 0.0)
+    @test isapprox(get_distance(seg,  2.0), 0.0)
+    @test isapprox(get_distance(seg,  5.0), 0.0)
+    @test isapprox(get_distance(seg,  5.5), 0.5)
+    @test isapprox(get_distance(seg, 15.5), 10.5)
+
+    @test !contains(seg, -1.0)
+    @test !contains(seg, 1.0)
+    @test contains(seg, 2.0)
+    @test contains(seg, 3.0)
+    @test contains(seg, 5.0)
+    @test !contains(seg, 5.5)
+
+    @test contains(seg, LineSegment1D(3.0, 3.5))
+    @test contains(seg, LineSegment1D(3.0, 3.0))
+    @test !contains(seg, LineSegment1D(3.0, 13.0))
+    @test !contains(seg, LineSegment1D(-3.0, 3.0))
+    @test !contains(seg, LineSegment1D(-3.0, -2.0))
+    @test !contains(seg, LineSegment1D(13.0, 15.0))
+
+    @test intersects(seg, LineSegment1D(3.0, 3.5))
+    @test intersects(seg, LineSegment1D(3.0, 3.0))
+    @test intersects(seg, LineSegment1D(3.0, 13.0))
+    @test intersects(seg, LineSegment1D(-3.0, 3.0))
+    @test !intersects(seg, LineSegment1D(-3.0, -2.0))
+    @test !intersects(seg, LineSegment1D(13.0, 15.0))
+end
+
+let
     L = Line(VecE2(0,0), π/4)
     L2 = L + VecE2(-1,1)
     @test isapprox(L2.C, VecE2(-1,1))

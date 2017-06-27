@@ -73,6 +73,7 @@ function body2inertial(point::VecSE2, reference::VecSE2)
     VecSE2(c*point.x -s*point.y + reference.x, s*point.x +c*point.y + reference.y, reference.θ + point.θ)
 end
 
+include("1d.jl")
 include("lines.jl")
 include("line_segments.jl")
 include("rays.jl")

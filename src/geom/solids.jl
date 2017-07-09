@@ -11,8 +11,8 @@ end
 Circ(x::Real, y::Real, r::Real) = Circ{VecE2}(VecE2(x, y), r)
 Circ(x::Real, y::Real, z::Real, r::Real) = Circ{VecE3}(VecE3(x, y, z), r)
 
-@compat Base.:+(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c + v, circ.r)
-@compat Base.:-(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c - v, circ.r)
+Base.:+(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c + v, circ.r)
+Base.:-(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c - v, circ.r)
 
 Base.contains{V}(circ::Circ{V}, p::V) = abs2(circ.c - p) ≤ circ.r*circ.r
 inertial2body(circ::Circ{VecE2}, reference::VecSE2) = Circ{VecE2}(inertial2body(circ.c, reference), circ.r)
@@ -29,8 +29,8 @@ function AABB(bot_left::VecE2, top_right::VecE2)
     return AABB(center, abs(Δ.x), abs(Δ.y))
 end
 
-@compat Base.:+(box::AABB, v::VecE2) = AABB(box.center + v, box.len, box.wid)
-@compat Base.:-(box::AABB, v::VecE2) = AABB(box.center - v, box.len, box.wid)
+Base.:+(box::AABB, v::VecE2) = AABB(box.center + v, box.len, box.wid)
+Base.:-(box::AABB, v::VecE2) = AABB(box.center - v, box.len, box.wid)
 
 function Base.contains(box::AABB, P::VecE2)
     -box.len/2 ≤ P.x - box.center.x ≤ box.len/2 &&
@@ -49,8 +49,8 @@ function OBB(center::VecE2, len::Float64, wid::Float64, θ::Float64)
 end
 OBB(center::VecSE2, len::Float64, wid::Float64) = OBB(convert(VecE2, center), len, wid, center.θ)
 
-@compat Base.:+(box::OBB, v::VecE2) = OBB(box.aabb+v, box.θ)
-@compat Base.:-(box::OBB, v::VecE2) = OBB(box.aabb-v, box.θ)
+Base.:+(box::OBB, v::VecE2) = OBB(box.aabb+v, box.θ)
+Base.:-(box::OBB, v::VecE2) = OBB(box.aabb-v, box.θ)
 
 function Base.contains(box::OBB, P::VecE2)
     C = box.aabb.center

@@ -2,7 +2,7 @@
 VecSE2: a 2d euclidean vector with an orientation
 =#
 
-immutable VecSE2 <: VecSE
+struct VecSE2 <: VecSE
     x :: Float64
     y :: Float64
     θ :: Float64
@@ -24,30 +24,30 @@ function Base.convert{R<:Real}(::Type{VecSE2}, a::AbstractArray{R})
 end
 Base.show(io::IO, a::VecSE2) = @printf(io, "VecSE2({%.3f, %.3f}, %.3f)", a.x, a.y, a.θ)
 
-@compat Base.:+(b::Real, a::VecSE2) = VecSE2(a.x+b, a.y+b, a.θ)
-@compat Base.:+(a::VecSE2, b::Real) = VecSE2(a.x+b, a.y+b, a.θ)
-@compat Base.:+(a::VecSE2, b::VecE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ)
-@compat Base.:+(a::VecSE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ+b.θ)
+Base.:+(b::Real, a::VecSE2) = VecSE2(a.x+b, a.y+b, a.θ)
+Base.:+(a::VecSE2, b::Real) = VecSE2(a.x+b, a.y+b, a.θ)
+Base.:+(a::VecSE2, b::VecE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ)
+Base.:+(a::VecSE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ+b.θ)
 
-@compat Base.:-(b::Real, a::VecSE2) = VecSE2(b-a.x, b-a.y, a.θ)
-@compat Base.:-(a::VecSE2, b::Real) = VecSE2(a.x-b, a.y-b, a.θ)
-@compat Base.:-(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
-@compat Base.:-(a::VecE2,  b::VecSE2) = VecE2(a.x-b.x, a.y-b.y)
-@compat Base.:-(a::VecSE2, b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ-b.θ)
+Base.:-(b::Real, a::VecSE2) = VecSE2(b-a.x, b-a.y, a.θ)
+Base.:-(a::VecSE2, b::Real) = VecSE2(a.x-b, a.y-b, a.θ)
+Base.:-(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
+Base.:-(a::VecE2,  b::VecSE2) = VecE2(a.x-b.x, a.y-b.y)
+Base.:-(a::VecSE2, b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ-b.θ)
 
-@compat Base.:*(b::Real, a::VecSE2) = VecSE2(b*a.x, b*a.y, a.θ)
-@compat Base.:*(a::VecSE2, b::Real) = VecSE2(a.x*b, a.y*b, a.θ)
+Base.:*(b::Real, a::VecSE2) = VecSE2(b*a.x, b*a.y, a.θ)
+Base.:*(a::VecSE2, b::Real) = VecSE2(a.x*b, a.y*b, a.θ)
 
-@compat Base.:/(a::VecSE2, b::Real) = VecSE2(a.x/b, a.y/b, a.θ)
+Base.:/(a::VecSE2, b::Real) = VecSE2(a.x/b, a.y/b, a.θ)
 
-@compat Base.:^(a::VecSE2, b::Integer) = VecSE2(a.x^b, a.y^b, a.θ)
-@compat Base.:^(a::VecSE2, b::AbstractFloat) = VecSE2(a.x^b, a.y^b, a.θ)
+Base.:^(a::VecSE2, b::Integer) = VecSE2(a.x^b, a.y^b, a.θ)
+Base.:^(a::VecSE2, b::AbstractFloat) = VecSE2(a.x^b, a.y^b, a.θ)
 
-@compat Base.:%(a::VecSE2, b::Real) = VecSE2(a.x%b, a.y%b, a.θ)
+Base.:%(a::VecSE2, b::Real) = VecSE2(a.x%b, a.y%b, a.θ)
 
 Base.clamp(a::VecSE2, lo::Real, hi::Real) = VecSE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi), a.θ)
 
-@compat Base.:(==)(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
+Base.:(==)(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
 Base.isequal(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
 function Base.isapprox(a::VecSE2, b::VecSE2;
     _absa::Float64 = abs(a),

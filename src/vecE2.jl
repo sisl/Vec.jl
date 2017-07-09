@@ -2,7 +2,7 @@
 VecE2: a 2d euclidean vector
 =#
 
-immutable VecE2 <: VecE
+struct VecE2 <: VecE
     x :: Float64
     y :: Float64
 
@@ -21,25 +21,25 @@ function Base.convert{R<:Real}(::Type{VecE2}, a::AbstractArray{R})
 end
 Base.show(io::IO, a::VecE2) = @printf(io, "VecE2(%.3f, %.3f)", a.x, a.y)
 
-@compat Base.:+(a::VecE2, b::Real)  = VecE2(a.x+b, a.y+b)
-@compat Base.:+(b::Real,  a::VecE2) = VecE2(a.x+b, a.y+b)
-@compat Base.:+(a::VecE2, b::VecE2) = VecE2(a.x+b.x, a.y+b.y)
+Base.:+(a::VecE2, b::Real)  = VecE2(a.x+b, a.y+b)
+Base.:+(b::Real,  a::VecE2) = VecE2(a.x+b, a.y+b)
+Base.:+(a::VecE2, b::VecE2) = VecE2(a.x+b.x, a.y+b.y)
 
-@compat Base.:-(a::VecE2)  = VecE2(-a.x, -a.y)
-@compat Base.:-(a::VecE2, b::Real)  = VecE2(a.x-b, a.y-b)
-@compat Base.:-(a::VecE2, b::VecE2) = VecE2(a.x-b.x, a.y-b.y)
+Base.:-(a::VecE2)  = VecE2(-a.x, -a.y)
+Base.:-(a::VecE2, b::Real)  = VecE2(a.x-b, a.y-b)
+Base.:-(a::VecE2, b::VecE2) = VecE2(a.x-b.x, a.y-b.y)
 
-@compat Base.:*(a::VecE2, b::Real) = VecE2(a.x*b, a.y*b)
-@compat Base.:*(b::Real, a::VecE2) = VecE2(a.x*b, a.y*b)
+Base.:*(a::VecE2, b::Real) = VecE2(a.x*b, a.y*b)
+Base.:*(b::Real, a::VecE2) = VecE2(a.x*b, a.y*b)
 
-@compat Base.:/(a::VecE2, b::Real) = VecE2(a.x/b, a.y/b)
+Base.:/(a::VecE2, b::Real) = VecE2(a.x/b, a.y/b)
 
-@compat Base.:^(a::VecE2, b::Integer) = VecE2(a.x^b, a.y^b)
-@compat Base.:^(a::VecE2, b::AbstractFloat) = VecE2(a.x^b, a.y^b)
+Base.:^(a::VecE2, b::Integer) = VecE2(a.x^b, a.y^b)
+Base.:^(a::VecE2, b::AbstractFloat) = VecE2(a.x^b, a.y^b)
 
-@compat Base.:%(a::VecE2, b::Real) = VecE2(a.x%b, a.y%b)
+Base.:%(a::VecE2, b::Real) = VecE2(a.x%b, a.y%b)
 
-@compat Base.:(==)(a::VecE2, b::VecE2) = isequal(a.x, b.x) && isequal(a.y, b.y)
+Base.:(==)(a::VecE2, b::VecE2) = isequal(a.x, b.x) && isequal(a.y, b.y)
 Base.isequal(a::VecE2, b::VecE2) = isequal(a.x, b.x) && isequal(a.y, b.y)
 
 Base.isfinite(a::VecE2) = isfinite(a.x) && isfinite(a.y)

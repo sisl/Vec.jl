@@ -1,8 +1,8 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__(true)
+__precompile__(true)
 
 module Vec
 
-using Compat
+# using Compat
 
 export
     AbstractVec,
@@ -41,9 +41,9 @@ export
     AABB,
     OBB
 
-abstract AbstractVec
-abstract VecE <: AbstractVec
-abstract VecSE <: AbstractVec
+abstract type AbstractVec end
+abstract type VecE <: AbstractVec end
+abstract type VecSE <: AbstractVec end
 
 lerp(a::Real, b::Real, t::Real) = a + (b-a)*t
 

@@ -5,7 +5,7 @@ export
 
     RPY
 
-immutable Quat
+struct Quat
     x::Float64
     y::Float64
     z::Float64
@@ -43,7 +43,7 @@ get_rotation_angle(q::Quat) = 2.0*acos(q.w)
 """
 Roll Pitch Yaw
 """
-immutable RPY
+struct RPY
     r::Float64
     p::Float64
     y::Float64

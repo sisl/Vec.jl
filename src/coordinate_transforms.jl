@@ -5,9 +5,13 @@ export
     UTM,
     ENU,
 
+    WGS_84,
+    INTERNATIONAL,
+
     check_is_in_radians,
     ensure_lon_between_pies,
-    deg_rad_min_to_degrees,
+    deg_min_sec_to_degrees,
+    degrees_to_deg_min_sec,
     get_Earth_radius,
 
     GeodeticDatum,
@@ -19,7 +23,7 @@ export
 Defines a reference ellipsoid used to map a position on the Earth
 relative to said ellipsoid
 """
-type GeodeticDatum
+struct GeodeticDatum
     a::Float64 # equitorial radius
     b::Float64 # polar radius
 end
@@ -63,12 +67,12 @@ const INTERNATIONAL = GeodeticDatum(6378388.0, 6356911.94613)
 #
 ############################################################################
 
-abstract AbstractCoordinate
+abstract type AbstractCoordinate end
 
 """
 The latitude, longitude, altitude coordinate system
 """
-type LatLonAlt <: AbstractCoordinate
+struct LatLonAlt <: AbstractCoordinate
     lat::Float64 # [rad] ϕ, angle between the equatorial plane and the straight line that passes through the point and through the center of the Earth
     lon::Float64 # [rad] λ, angle (typically east) from a reference meridian to another meridian that passes through that point
     alt::Float64 # [m] above reference ellipsoid
@@ -123,7 +127,7 @@ Base.convert(::Type{LatLonAlt}, p::VecE3) = LatLonAlt(p.x, p.y, p.z)
 """
 The Earth-centered, Earth-fixed coordinate system
 """
-type ECEF <: AbstractCoordinate
+struct ECEF <: AbstractCoordinate
     x::Float64 # [m]
     y::Float64 # [m]
     z::Float64 # [m]
@@ -138,7 +142,7 @@ Universal Transverse Mercator coordinate system
 const UTM_LATITUDE_LIMIT_NORTH = deg2rad(84)
 const UTM_LATITUDE_LIMIT_SOUTH = deg2rad(-80)
 
-type UTM <: AbstractCoordinate
+struct UTM <: AbstractCoordinate
     e::Float64 # [m]
     n::Float64 # [m]
     u::Float64 # [m] above reference ellipsoid
@@ -158,7 +162,7 @@ end
 East North Up coordinate system
 relative to some point on the surface of the earth
 """
-type ENU <: AbstractCoordinate
+struct ENU <: AbstractCoordinate
     e::Float64 # [m]
     n::Float64 # [m]
     u::Float64 # [m] above reference location

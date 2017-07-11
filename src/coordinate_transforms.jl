@@ -12,7 +12,7 @@ export
     ensure_lon_between_pies,
     deg_min_sec_to_degrees,
     degrees_to_deg_min_sec,
-    get_Earth_radius,
+    get_earth_radius,
 
     GeodeticDatum,
     eccentricity
@@ -27,12 +27,12 @@ struct GeodeticDatum
     a::Float64 # equitorial radius
     b::Float64 # polar radius
 end
+const WGS_84        = GeodeticDatum(6378137.0, 6356752.314245)
+const INTERNATIONAL = GeodeticDatum(6378388.0, 6356911.94613)
 
-function eccentricity(datum::GeodeticDatum)
-    d = datum.b/datum.a
-    sqrt(1.0-d*d)
-end
-function radius_of_curvature_in_the_meridian(datum::GeodeticDatum, ϕ::Float64)
+eccentricity_sq(datum::GeodeticDatum) = 1.0 - datum.b^2 / datum.a^2
+eccentricity(datum::GeodeticDatum) = sqrt(eccentricity_sq(datum))
+function radius_of_curvature_in_the_meridian(ϕ::Float64, datum::GeodeticDatum)
 
     # ϕ = meridian angle (latitude)
 
@@ -44,7 +44,7 @@ function radius_of_curvature_in_the_meridian(datum::GeodeticDatum, ϕ::Float64)
 
     ρ
 end
-function radius_of_curvature_in_the_prime_vertical(datum::GeodeticDatum, ϕ::Float64)
+function radius_of_curvature_in_the_prime_vertical(ϕ::Float64, datum::GeodeticDatum=WGS_84)
 
     # ϕ = meridian angle (latitude)
 
@@ -57,8 +57,7 @@ function radius_of_curvature_in_the_prime_vertical(datum::GeodeticDatum, ϕ::Flo
     ν
 end
 
-const WGS_84        = GeodeticDatum(6378137.0, 6356752.314245)
-const INTERNATIONAL = GeodeticDatum(6378388.0, 6356911.94613)
+
 
 ############################################################################
 #
@@ -78,7 +77,7 @@ struct LatLonAlt <: AbstractCoordinate
     alt::Float64 # [m] above reference ellipsoid
 end
 
-Base.print(io::IO, lla::LatLonAlt) = @printf("%6.2f %7.2f %10.2f", rad2deg(lla.lat), rad2deg(lla.lon), lla.alt)
+Base.print(io::IO, lla::LatLonAlt) = @printf(io, "%6.2f %7.2f %10.2f", rad2deg(lla.lat), rad2deg(lla.lon), lla.alt)
 
 function check_is_in_radians(lla::LatLonAlt)
     if abs(lla.lat) > π/2 || abs(lla.lon) > π
@@ -110,15 +109,11 @@ function degrees_to_deg_min_sec(degrees::Real)
     sec = remainder * 60.0
     (convert(Int, deg), convert(Int, min), sec)
 end
-function get_Earth_radius(lat::Float64, lon::Float64, datum::GeodeticDatum=WGS_84)
+function get_earth_radius(lat::Float64, datum::GeodeticDatum=WGS_84)
 
-    a = datum.a
-    e = eccentricity(datum)
-    e² = e*e
-
-    slat = sin(lat)
-
-    a / sqrt(1.0 - e²*slat*slat)
+    a, b = datum.a, datum.b
+    c, s = cos(lat), sin(lat)
+    return sqrt(((a^2*c)^2 + (b^2*s)^2)/((a*c)^2 + (b*s)^2))
 end
 
 Base.convert(::Type{VecE3}, lla::LatLonAlt) = VecE3(lla.lat, lla.lon, lla.alt)
@@ -176,24 +171,22 @@ Base.:-(a::ENU, b::ENU) = ENU(a.e-b.e, a.n-b.n, a.u-b.u)
 
 function Base.convert(::Type{ECEF}, lla::LatLonAlt, datum::GeodeticDatum=WGS_84)
 
-    lat = lla.lat
-    lon = lla.lon
-    alt = lla.alt
+    ϕ = lla.lat
+    λ = lla.lon
+    h = lla.alt
 
-    a = datum.a
-    e = eccentricity(datum)
-    e² = e*e
+    e² = eccentricity_sq(datum)
 
-    slat = sin(lat)
-    clat = cos(lat)
-    slon = sin(lon)
-    clon = cos(lon)
+    sϕ = sin(ϕ)
+    cϕ = cos(ϕ)
+    sλ = sin(λ)
+    cλ = cos(λ)
 
-    RN = a / sqrt(1.0 - e²*slat*slat)
+    Rₙ = radius_of_curvature_in_the_prime_vertical(ϕ, datum)
 
-    x = (RN + alt)*clat*clon
-    y = (RN + alt)*clat*slon
-    z = (RN*(1.0-e²)+alt)*slat
+    x = (Rₙ         + h)*cϕ*cλ
+    y = (Rₙ         + h)*cϕ*sλ
+    z = (Rₙ*(1.0-e²)+ h)*sϕ
 
     ECEF(x,y,z)
 end
@@ -211,8 +204,7 @@ function Base.convert(::Type{LatLonAlt}, ecef::ECEF, datum::GeodeticDatum=WGS_84
 
     a = datum.a
     b = datum.b
-    e = eccentricity(datum)
-    e² = e*e
+    e² = eccentricity_sq(datum)
 
     x = ecef.x
     y = ecef.y
@@ -220,18 +212,26 @@ function Base.convert(::Type{LatLonAlt}, ecef::ECEF, datum::GeodeticDatum=WGS_84
 
     λ = atan2(y, x)
     p = sqrt(x*x + y*y)
-    θ = atan(z*a / (p*b))
+    θ = atan2(z*a, (p*b))
 
     h = 0.0
-    ϕ = atan(z/(p*(1.0-e²)))
+    ϕ = atan2(z,p*(1.0-e²))
 
-    Δh = Inf
-    while Δh > 1e-4
-        N = a / sqrt(1-e²*sin(ϕ)^2)
-        h₂ = p/cos(ϕ) - N
-        ϕ = atan(z/(p*(1-e²*N/(N + h₂))))
-        Δh = abs(h - h₂)
-        h = h₂
+    # the equation diverges at the poles
+    if isapprox(abs(θ), π/2, atol=0.1)
+        Rₙ = radius_of_curvature_in_the_prime_vertical(ϕ, datum)
+        ϕₛ = sin(ϕ)
+        L = z + e²*Rₙ*ϕₛ
+        h = L / ϕₛ - Rₙ
+    else
+        Δh = Inf
+        while Δh > 1e-4
+            N = a / sqrt(1-e²*sin(ϕ)^2)
+            h₂ = p/cos(ϕ) - N
+            ϕ = atan2(z, p*(1-e²*N/(N + h₂)))
+            Δh = abs(h - h₂)
+            h = h₂
+        end
     end
 
     ensure_lon_between_pies(LatLonAlt(ϕ, λ, h))
@@ -364,7 +364,7 @@ function Base.convert(::Type{LatLonAlt}, utm::UTM, datum::GeodeticDatum=WGS_84)
     kₒ⁷ = kₒ⁴*kₒ³
     kₒ⁸ = kₒ⁴*kₒ⁴
 
-    ν = radius_of_curvature_in_the_prime_vertical(datum, ϕₚ)
+    ν = radius_of_curvature_in_the_prime_vertical(ϕₚ, datum)
     ν² = ν*ν
     ν³ = ν²*ν
     ν⁴ = ν²*ν²
@@ -373,7 +373,7 @@ function Base.convert(::Type{LatLonAlt}, utm::UTM, datum::GeodeticDatum=WGS_84)
     ν⁷ = ν⁴*ν³
     ν⁸ = ν⁴*ν⁴
 
-    ρ = radius_of_curvature_in_the_meridian(datum, ϕₚ)
+    ρ = radius_of_curvature_in_the_meridian(ϕₚ, datum)
 
     T10 = tanϕₚ/(2ρ*ν*kₒ²)
     T11 = tanϕₚ/(24ρ*ν³*kₒ⁴) * (5.0 + 3*tan²ϕₚ + eₚ²*cos²ϕₚ - 4*eₚ⁴*cosϕₚ - 9*tan²ϕₚ*eₚ²*cos²ϕₚ)

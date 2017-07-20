@@ -89,6 +89,31 @@ function Base.intersect(A::VecSE2, B::VecSE2)
 
     return VecE2(NaN,NaN) # no intersection
 end
+function Base.intersect(ray::Ray, seg::LineSegment)
+    R = VecE2(ray)
+    v₁ = VecE2(R) - seg.A
+    v₂ = seg.B - seg.A
+    v₃ = polar(1.0, ray.θ + π/2)
+
+    denom = dot(v₂, v₃)
+
+    if !isapprox(denom, 0.0, atol=1e-10)
+        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
+        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        if 0 ≤ t₁ && 0 ≤ t₂ ≤ 1
+            return R + polar(t₁, ray.θ)
+        end
+    else
+        # denom is zero if the segment and the ray are parallel
+        # only collide if they are perfectly aligned
+        # must ensure that at least one point is in the positive ray direction
+        r = polar(1.0, ray.θ)
+        if are_collinear(R, seg.A, seg.B) &&
+               (dot(r, seg.A - R) ≥ 0 || dot(r, seg.B - R) ≥ 0)
+            return R
+        end
+    end
+end
 
 """
 What side of the ray you are on

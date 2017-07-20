@@ -67,4 +67,6 @@ include("geom/geom.jl")
 include("coordinate_transforms.jl")
 include("quat.jl")
 
+Base.vec(v::Union{AbstractVec, Quat, RPY}) = convert(Vector{Float64}, v)
+
 end # module

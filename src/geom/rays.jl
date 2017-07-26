@@ -113,6 +113,8 @@ function Base.intersect(ray::Ray, seg::LineSegment)
             return R
         end
     end
+
+    return VecE2(NaN,NaN) # no intersection
 end
 
 """

@@ -140,6 +140,9 @@ let
     @test !intersects(Ray(0,0,0), LineSegment(VecE2(0,1), VecE2(1,1)))
     @test  intersects(Ray(0,0,0), LineSegment(VecE2(1,0), VecE2(2,0)))
     @test !intersects(Ray(0,0,0), LineSegment(VecE2(-1,0), VecE2(-2,0)))
+
+    @test isapprox(intersect(VecSE2(4,0,3pi/4), LineSegment(VecE2(5.6,0), VecE2(0,3.6))),
+                   VecE2(1.12, 2.88), atol=1e-3)
 end
 
 let

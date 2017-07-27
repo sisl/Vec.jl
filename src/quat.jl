@@ -48,6 +48,7 @@ struct RPY
     p::Float64
     y::Float64
 end
+Base.convert(::Type{Vector{Float64}}, rpy::RPY) = [rpy.r, rpy.p, rpy.y]
 function Base.convert(::Type{RPY}, q::Quat)
 
     q2 = norm(q)

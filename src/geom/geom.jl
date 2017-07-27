@@ -24,6 +24,21 @@ function are_collinear(a::AbstractVec, b::AbstractVec, c::AbstractVec, tol::Floa
     abs(val) < tol
 end
 
+"""
+To find orientation of ordered triplet (p, q, r).
+The function returns following values
+0 --> p, q and r are colinear
+1 --> Clockwise
+2 --> Counterclockwise
+"""
+function orientation(P::VecE2, Q::VecE2, R::VecE2)
+    val = (Q.y - P.y)*(R.x - Q.x) - (Q.x - P.x)*(R.y - Q.y)
+    if val ≈ 0
+        return 0  # colinear
+    end
+    return (val > 0) ? 1 : 2
+end
+
 function inertial2body(point::VecE2, reference::VecSE2)
 
     #=

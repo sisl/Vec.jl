@@ -34,6 +34,7 @@ export
     inertial2body,
     body2inertial,
 
+    orientation,
     are_collinear,
     get_intersection,
 

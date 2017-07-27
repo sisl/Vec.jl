@@ -104,14 +104,21 @@ let
     L2 = LineSegment(VecE2(0,0), VecE2(-1,1))
     @test angledist(L, L2) ≈ π/2
     @test !parallel(L, L2)
+    @test intersects(L, L2)
 
     L2 = LineSegment(VecE2(0,0), VecE2(1,-1))
     @test angledist(L, L2) ≈ π/2
     @test !parallel(L, L2)
+    @test intersects(L, L2)
 
     L2 = LineSegment(VecE2(0,0), VecE2(1,-1)) + VecE2(5,-7)
     @test angledist(L, L2) ≈ π/2
     @test !parallel(L, L2)
+    @test !intersects(L, L2)
+
+    @test  intersects(L, LineSegment(VecE2(1,1), VecE2(2,-1)))
+    @test !intersects(L, LineSegment(VecE2(2,2), VecE2(5,6)))
+    @test !intersects(L, LineSegment(VecE2(-5,-5), VecE2(5,-5)))
 end
 
 let

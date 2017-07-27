@@ -44,7 +44,7 @@ function intersects(ray::Ray, line::Line;
 end
 function intersects(ray::Ray, seg::LineSegment)
     R = VecE2(ray)
-    v₁ = VecE2(R) - seg.A
+    v₁ = R - seg.A
     v₂ = seg.B - seg.A
     v₃ = polar(1.0, ray.θ + π/2)
 

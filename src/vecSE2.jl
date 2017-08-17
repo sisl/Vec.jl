@@ -18,7 +18,7 @@ Base.copy(a::VecSE2) = VecSE2(a.x, a.y, a.θ)
 Base.convert(::Type{Vector{Float64}}, a::VecSE2) = [a.x, a.y, a.θ]
 Base.convert(::Type{VecE3}, a::VecSE2) = VecE3(a.x, a.y, a.θ)
 Base.convert(::Type{VecE2}, a::VecSE2) = VecE2(a.x, a.y)
-function Base.convert{R<:Real}(::Type{VecSE2}, a::AbstractArray{R})
+function Base.convert(::Type{VecSE2}, a::AbstractArray{R}) where R<:Real
     @assert(length(a) == 3)
     VecSE2(a[1], a[2], a[3])
 end

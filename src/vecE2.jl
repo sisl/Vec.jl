@@ -15,7 +15,7 @@ polar(r::Real, θ::Real) = VecE2(r*cos(θ), r*sin(θ))
 Base.length(::VecE2) = 2
 Base.copy(a::VecE2) = VecE2(a.x, a.y)
 Base.convert(::Type{Vector{Float64}}, a::VecE2) = [a.x, a.y]
-function Base.convert{R<:Real}(::Type{VecE2}, a::AbstractArray{R})
+function Base.convert(::Type{VecE2}, a::AbstractArray{R}) where R<:Real
     @assert(length(a) == 2)
     VecE2(a[1], a[2])
 end

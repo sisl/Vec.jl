@@ -4,7 +4,7 @@ export
     AABB_center_length_width,
     OBB
 
-immutable Circ{V<:AbstractVec}
+struct Circ{V<:AbstractVec}
     c::V # center
     r::Float64 # radius
 end
@@ -14,11 +14,11 @@ Circ(x::Real, y::Real, z::Real, r::Real) = Circ{VecE3}(VecE3(x, y, z), r)
 Base.:+(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c + v, circ.r)
 Base.:-(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c - v, circ.r)
 
-Base.contains{V}(circ::Circ{V}, p::V) = abs2(circ.c - p) ≤ circ.r*circ.r
+Base.contains(circ::Circ{V}, p::V) where {V} = abs2(circ.c - p) ≤ circ.r*circ.r
 inertial2body(circ::Circ{VecE2}, reference::VecSE2) = Circ{VecE2}(inertial2body(circ.c, reference), circ.r)
 
 # Axis-Aligned Bounding Box
-immutable AABB
+struct AABB
     center::VecE2
     len::Float64 # length along x axis
     wid::Float64 # width along y axis
@@ -39,7 +39,7 @@ end
 
 
 # Oriented Bounding Box
-immutable OBB
+struct OBB
     aabb::AABB
     θ::Float64
 end

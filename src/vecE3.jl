@@ -15,7 +15,7 @@ end
 Base.length(::VecE3) = 3
 Base.copy(a::VecE3) = VecE3(a.x, a.y, a.z)
 Base.convert(::Type{Vector{Float64}}, a::VecE3) = [a.x, a.y, a.z]
-function Base.convert{R<:Real}(::Type{VecE3}, a::AbstractArray{R})
+function Base.convert(::Type{VecE3}, a::AbstractArray{R}) where R<:Real
     @assert(length(a) == 3)
     VecE3(a[1], a[2], a[3])
 end

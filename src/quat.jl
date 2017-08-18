@@ -15,7 +15,7 @@ end
 Base.length(::Quat) = 4
 Base.copy(a::Quat) = Quat(a.x, a.y, a.z, a.w)
 Base.convert(::Type{Vector{Float64}}, a::Quat) = [a.x, a.y, a.z, a.w]
-function Base.convert{R<:Real}(::Type{Quat}, a::AbstractArray{R})
+function Base.convert(::Type{Quat}, a::AbstractArray{R}) where R<:Real
     @assert(length(a) == 4)
     Quat(a[1], a[2], a[3], a[4])
 end

@@ -4,7 +4,7 @@ export
     get_distance,
     get_side
 
-immutable Line
+struct Line
     C::VecE2
     θ::Float64
 end

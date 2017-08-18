@@ -6,7 +6,7 @@ export
     closest_time_of_approach_and_distance,
     get_intersection_time
 
-immutable Projectile
+struct Projectile
     pos::VecSE2 # position (x,y,θ)
     v::Float64  # speed
 end

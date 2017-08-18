@@ -2,7 +2,7 @@ export
     LineSegment,
     parallel
 
-immutable LineSegment
+struct LineSegment
     A::VecE2
     B::VecE2
 end

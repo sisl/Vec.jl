@@ -20,6 +20,7 @@ export
            # proj(a::vec, b::vec, ::Type{Vec}) will do vector projection of a onto b
 
     lerp,  # linear interpolation between two vec's
+    invlerp,
     lerp_angle,
 
     dist,  # scalar distance between two vec's
@@ -47,6 +48,7 @@ abstract type VecE <: AbstractVec end
 abstract type VecSE <: AbstractVec end
 
 lerp(a::Real, b::Real, t::Real) = a + (b-a)*t
+invlerp(a::Real, b::Real, c::Real) = (c - a)/(b-a)
 
 include("vecE2.jl")
 include("vecE3.jl")

@@ -2,8 +2,8 @@
 
 Provides 2D and 3D vector types for vector operations in Julia.
 
-[![Build Status](https://travis-ci.org/sisl/Vec.jl.svg?branch=master)](https://travis-ci.org/tawheeler/Vec.jl)
-[![Coverage Status](https://coveralls.io/repos/sisl/Vec.jl/badge.svg)](https://coveralls.io/r/tawheeler/Vec.jl)
+[![Build Status](https://travis-ci.org/sisl/Vec.jl.svg?branch=master)](https://travis-ci.org/sisl/Vec.jl)
+[![Coverage Status](https://coveralls.io/repos/sisl/Vec.jl/badge.svg)](https://coveralls.io/r/sisl/Vec.jl)
 
 # Git It
 

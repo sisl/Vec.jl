@@ -2,8 +2,8 @@
 
 Provides 2D and 3D vector types for vector operations in Julia.
 
-[![Build Status](https://travis-ci.org/tawheeler/Vec.jl.svg?branch=master)](https://travis-ci.org/tawheeler/Vec.jl)
-[![Coverage Status](https://coveralls.io/repos/tawheeler/Vec.jl/badge.svg)](https://coveralls.io/r/tawheeler/Vec.jl)
+[![Build Status](https://travis-ci.org/sisl/Vec.jl.svg?branch=master)](https://travis-ci.org/tawheeler/Vec.jl)
+[![Coverage Status](https://coveralls.io/repos/sisl/Vec.jl/badge.svg)](https://coveralls.io/r/tawheeler/Vec.jl)
 
 # Git It
 
@@ -23,13 +23,4 @@ Pkg.clone("https://github.com/tawheeler/Vec.jl.git")
 v = VecE2(0, 1)
 v = VecSE2(0,1,0.5)
 v = VecE3(0, 1, 2)
-```
-
-Vector math works as one expects:
-
-```
-u = v + 2
-u = v * 2
-v = cross(v, VecE2(0.4, 5.0))
-hypot(v)
 ```

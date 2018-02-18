@@ -21,7 +21,7 @@ function get_distance(seg::LineSegment, P::VecE2)
     ab = seg.B - seg.A
     pb = P - seg.A
 
-    denom = abs2(ab)
+    denom = sum(ab.^2)
     if denom == 0.0
         return 0.0
     end
@@ -29,11 +29,11 @@ function get_distance(seg::LineSegment, P::VecE2)
     r = dot(ab, pb)/denom
 
     if r ≤ 0.0
-        abs(P - seg.A)
+        norm(P - seg.A)
     elseif r ≥ 1.0
-        abs(P - seg.B)
+        norm(P - seg.B)
     else
-        abs(P - (seg.A + r*ab))
+        norm(P - (seg.A + r*ab))
     end
 end
 
@@ -49,7 +49,7 @@ The angular distance between the two line segments
 function angledist(segA::LineSegment, segB::LineSegment)
     u = segA.B - segA.A
     v = segB.B - segB.A
-    sqdenom = abs2(u)*abs2(v)
+    sqdenom = dot(u,u)*dot(v,v)
     if isapprox(sqdenom, 0.0, atol=1e-10)
         return NaN
     end

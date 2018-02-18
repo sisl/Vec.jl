@@ -2,63 +2,17 @@
 VecE2: a 2d euclidean vector
 =#
 
-struct VecE2 <: VecE
-    x :: Float64
-    y :: Float64
-
-    VecE2() = new(0.0,0.0)
-    VecE2(x::Real, y::Real) = new(x,y)
+struct VecE2{R<:Real} <: VecE{2,R}
+    x::R
+    y::R
 end
+VecE2() = VecE2(0.0,0.0)
+VecE2(x::Integer, y::Integer) = VecE2(float(x), float(y))
+VecE2(t::Tuple) = VecE2(promote(t...)...)
 
 polar(r::Real, θ::Real) = VecE2(r*cos(θ), r*sin(θ))
 
-Base.length(::VecE2) = 2
-Base.copy(a::VecE2) = VecE2(a.x, a.y)
-Base.convert(::Type{Vector{Float64}}, a::VecE2) = [a.x, a.y]
-function Base.convert(::Type{VecE2}, a::AbstractArray{R}) where R<:Real
-    @assert(length(a) == 2)
-    VecE2(a[1], a[2])
-end
 Base.show(io::IO, a::VecE2) = @printf(io, "VecE2(%.3f, %.3f)", a.x, a.y)
-
-Base.:+(a::VecE2, b::Real)  = VecE2(a.x+b, a.y+b)
-Base.:+(b::Real,  a::VecE2) = VecE2(a.x+b, a.y+b)
-Base.:+(a::VecE2, b::VecE2) = VecE2(a.x+b.x, a.y+b.y)
-
-Base.:-(a::VecE2)  = VecE2(-a.x, -a.y)
-Base.:-(a::VecE2, b::Real)  = VecE2(a.x-b, a.y-b)
-Base.:-(a::VecE2, b::VecE2) = VecE2(a.x-b.x, a.y-b.y)
-
-Base.:*(a::VecE2, b::Real) = VecE2(a.x*b, a.y*b)
-Base.:*(b::Real, a::VecE2) = VecE2(a.x*b, a.y*b)
-
-Base.:/(a::VecE2, b::Real) = VecE2(a.x/b, a.y/b)
-
-Base.:^(a::VecE2, b::Integer) = VecE2(a.x^b, a.y^b)
-Base.:^(a::VecE2, b::AbstractFloat) = VecE2(a.x^b, a.y^b)
-
-Base.:%(a::VecE2, b::Real) = VecE2(a.x%b, a.y%b)
-
-Base.:(==)(a::VecE2, b::VecE2) = isequal(a.x, b.x) && isequal(a.y, b.y)
-Base.isequal(a::VecE2, b::VecE2) = isequal(a.x, b.x) && isequal(a.y, b.y)
-
-Base.isfinite(a::VecE2) = isfinite(a.x) && isfinite(a.y)
-Base.isinf(a::VecE2) = isinf(a.x) || isinf(a.y)
-Base.isnan(a::VecE2) = isnan(a.x) || isnan(a.y)
-
-Base.round(a::VecE2) = VecE2(round(a.x), round(a.y))
-Base.floor(a::VecE2) = VecE2(floor(a.x), floor(a.y))
-Base.ceil(a::VecE2) = VecE2(ceil(a.x), ceil(a.y))
-Base.trunc(a::VecE2) = VecE2(trunc(a.x), trunc(a.y))
-Base.clamp(a::VecE2, lo::Real, hi::Real) = VecE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi))
-
-Base.abs(a::VecE2) = hypot(a.x, a.y)
-Base.hypot(a::VecE2) = hypot(a.x, a.y)
-Base.abs2(a::VecE2) = a.x*a.x + a.y*a.y
-function Base.norm(a::VecE2)
-    m = abs(a)
-    VecE2(a.x/m, a.y/m)
-end
 
 Base.atan2(a::VecE2) = atan2(a.y, a.x)
 
@@ -69,8 +23,6 @@ function dist2(a::VecE2, b::VecE2)
     Δx*Δx + Δy*Δy
 end
 
-Base.dot(a::VecE2, b::VecE2) = a.x*b.x + a.y*b.y
-Base.cross(a::VecE2, b::VecE2) = a.x*b.y - a.y*b.x
 proj(a::VecE2, b::VecE2, ::Type{Float64}) = (a.x*b.x + a.y*b.y) / hypot(b.x, b.y) # dot(a,b) / |b|
 function proj(a::VecE2, b::VecE2, ::Type{VecE2})
     # dot(a,b) / dot(b,b) ⋅ b

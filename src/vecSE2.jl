@@ -2,75 +2,59 @@
 VecSE2: a 2d euclidean vector with an orientation
 =#
 
-struct VecSE2 <: VecSE
-    x :: Float64
-    y :: Float64
-    θ :: Float64
-
-    VecSE2(x::Real=0.0, y::Real=0.0, θ::Real=0.0) = new(x, y, θ)
-    VecSE2(a::VecE2, θ::Real=0.0) = new(a.x, a.y, θ)
+struct VecSE2{R<:Real} <: VecSE{3,R}
+    x::R
+    y::R
+    θ::R
 end
+
+VecSE2() = VecSE2(0.0,0.0,0.0)
+VecSE2(x::Real, y::Real) = VecSE2(x,y,0.0)
+VecSE2(a::VecE2, θ::Real=0.0) = VecSE2(a.x, a.y, θ)
+VecSE2(t::Tuple) = VecSE2(promote(t...)...)
+
+Base.convert(::Type{VecE2}, a::VecSE2) = VecE2(a.x, a.y)
+VecE2(a::VecSE2) = VecE2(a.x, a.y)
 
 polar(r::Real, ϕ::Real, θ::Real) = VecSE2(r*cos(ϕ), r*sin(ϕ), θ)
 
-Base.length(::VecSE2) = 3
-Base.copy(a::VecSE2) = VecSE2(a.x, a.y, a.θ)
-Base.convert(::Type{Vector{Float64}}, a::VecSE2) = [a.x, a.y, a.θ]
-Base.convert(::Type{VecE3}, a::VecSE2) = VecE3(a.x, a.y, a.θ)
-Base.convert(::Type{VecE2}, a::VecSE2) = VecE2(a.x, a.y)
-function Base.convert(::Type{VecSE2}, a::AbstractArray{R}) where R<:Real
-    @assert(length(a) == 3)
-    VecSE2(a[1], a[2], a[3])
-end
 Base.show(io::IO, a::VecSE2) = @printf(io, "VecSE2({%.3f, %.3f}, %.3f)", a.x, a.y, a.θ)
 
-Base.:+(b::Real, a::VecSE2) = VecSE2(a.x+b, a.y+b, a.θ)
-Base.:+(a::VecSE2, b::Real) = VecSE2(a.x+b, a.y+b, a.θ)
+
 Base.:+(a::VecSE2, b::VecE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ)
-Base.:+(a::VecSE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, a.θ+b.θ)
+Base.:+(a::VecE2, b::VecSE2) = VecSE2(a.x+b.x, a.y+b.y, b.θ)
 
-Base.:-(b::Real, a::VecSE2) = VecSE2(b-a.x, b-a.y, a.θ)
-Base.:-(a::VecSE2, b::Real) = VecSE2(a.x-b, a.y-b, a.θ)
 Base.:-(a::VecSE2, b::VecE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ)
-Base.:-(a::VecE2,  b::VecSE2) = VecE2(a.x-b.x, a.y-b.y)
-Base.:-(a::VecSE2, b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, a.θ-b.θ)
+Base.:-(a::VecE2,  b::VecSE2) = VecSE2(a.x-b.x, a.y-b.y, -b.θ)
 
-Base.:*(b::Real, a::VecSE2) = VecSE2(b*a.x, b*a.y, a.θ)
-Base.:*(a::VecSE2, b::Real) = VecSE2(a.x*b, a.y*b, a.θ)
+op_overload_error = """
+    Operator overloading for Real and VecSE2 has been removed.
 
-Base.:/(a::VecSE2, b::Real) = VecSE2(a.x/b, a.y/b, a.θ)
+    To add or subtract, use VecSE2(x,y,θ) + b*VecE2(1.0, 1.0).
+    To multiply or divide, use scale_euclidean(VecSE2(x,y,θ), b)
+"""
+Base.:-(b::Real, a::VecSE2) = error(op_overload_error)
+Base.:-(a::VecSE2, b::Real) = error(op_overload_error)
+Base.:+(b::Real, a::VecSE2) = error(op_overload_error)
+Base.:+(a::VecSE2, b::Real) = error(op_overload_error)
+Base.:*(b::Real, a::VecSE2) = error(op_overload_error)
+Base.:*(a::VecSE2, b::Real) = error(op_overload_error)
+Base.:/(a::VecSE2, b::Real) = error(op_overload_error)
+Base.:^(a::VecSE2, b::Integer) = error(op_overload_error)
+Base.:^(a::VecSE2, b::AbstractFloat) = error(op_overload_error)
 
-Base.:^(a::VecSE2, b::Integer) = VecSE2(a.x^b, a.y^b, a.θ)
-Base.:^(a::VecSE2, b::AbstractFloat) = VecSE2(a.x^b, a.y^b, a.θ)
+Base.:%(a::VecSE2, b::Real) = error(op_overload_error)
 
-Base.:%(a::VecSE2, b::Real) = VecSE2(a.x%b, a.y%b, a.θ)
+scale_euclidean(a::VecSE2, b::Real) = VecSE2(b*a.x, b*a.y, a.θ)
+clamp_euclidean(a::VecSE2, lo::Real, hi::Real) = VecSE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi), a.θ)
 
-Base.clamp(a::VecSE2, lo::Real, hi::Real) = VecSE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi), a.θ)
+Base.norm(a::VecSE2, p::Real=2) = error("norm is not defined for VecSE2 - use norm(VecE2(v)) to get the norm of the Euclidean part")
+normsquared(a::VecSE2) = norm(a)^2 # this will correctly throw an error
+Base.normalize(a::VecSE2, p::Real=2) = error("normalize is not defined for VecSE2. Use normalize_euclidean(v) to normalize the euclidean part of the vector")
 
-Base.:(==)(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
-Base.isequal(a::VecSE2, b::VecSE2) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.θ, b.θ)
-function Base.isapprox(a::VecSE2, b::VecSE2;
-    _absa::Float64 = abs(a),
-    _absb::Float64 = abs(b),
-    _maxeps::Float64 = max(eps(_absa), eps(_absb)),
-    rtol::Real=cbrt(_maxeps),
-    atol::Real=sqrt(_maxeps)
-    )
-
-    isapprox(VecE2(a.x, a.y), VecE2(b.x, b.y), _absa=_absa, _absb=_absb, _maxeps=_maxeps, rtol=rtol, atol=atol) &&
-    isapprox(a.θ, b.θ, rtol=rtol, atol=atol)
-end
-
-Base.isfinite(a::VecSE2) = isfinite(a.x) && isfinite(a.y) && isfinite(a.θ)
-Base.isinf(a::VecSE2) = isinf(a.x) || isinf(a.y) || isinf(a.θ)
-Base.isnan(a::VecSE2) = isnan(a.x) || isnan(a.y) || isnan(a.θ)
-
-Base.abs(a::VecSE2) = hypot(a.x, a.y)
-Base.hypot(a::VecSE2) = hypot(a.x, a.y)
-Base.abs2(a::VecSE2) = a.x*a.x + a.y*a.y
-function Base.norm(a::VecSE2)
-    m = abs(a)
-    VecSE2(a.x/m, a.y/m)
+function normalize_euclidian(a::VecSE2, p::Real=2)
+    n = norm(VecE2(a))
+    return VecSE2(a.x/n, a.y/n, a.θ)
 end
 
 Base.atan2(a::VecSE2) = atan2(a.y, a.x)

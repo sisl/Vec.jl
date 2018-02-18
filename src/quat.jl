@@ -5,27 +5,14 @@ export
 
     RPY
 
-struct Quat
+struct Quat <: FieldVector{4, Float64}
     x::Float64
     y::Float64
     z::Float64
     w::Float64
 end
 
-Base.length(::Quat) = 4
-Base.copy(a::Quat) = Quat(a.x, a.y, a.z, a.w)
-Base.convert(::Type{Vector{Float64}}, a::Quat) = [a.x, a.y, a.z, a.w]
-function Base.convert(::Type{Quat}, a::AbstractArray{R}) where R<:Real
-    @assert(length(a) == 4)
-    Quat(a[1], a[2], a[3], a[4])
-end
 Base.show(io::IO, q::Quat) = @printf(io, "QUAT({%6.3f, %6.3f, %6.3f}, %6.3f)", q.x, q.y, q.z, q.w)
-
-Base.abs(q::Quat) = sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w)
-function Base.norm(q::Quat)
-    n = abs(q)
-    Quat(q.x/n, q.y/n, q.z/n, q.w/n)
-end
 
 function get_axis(q::Quat)
 
@@ -43,15 +30,14 @@ get_rotation_angle(q::Quat) = 2.0*acos(q.w)
 """
 Roll Pitch Yaw
 """
-struct RPY
+struct RPY <: FieldVector{3, Float64}
     r::Float64
     p::Float64
     y::Float64
 end
-Base.convert(::Type{Vector{Float64}}, rpy::RPY) = [rpy.r, rpy.p, rpy.y]
 function Base.convert(::Type{RPY}, q::Quat)
 
-    q2 = norm(q)
+    q2 = normalized(q)
     x = q.x
     y = q.y
     z = q.z

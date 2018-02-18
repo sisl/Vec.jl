@@ -14,3 +14,5 @@ include("test_quat.jl")
 
 include("test_coordinate_transforms.jl")
 include("test_geomE2.jl")
+
+include("test_diff.jl")

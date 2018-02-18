@@ -21,7 +21,7 @@ function get_distance(seg::LineSegment, P::VecE2)
     ab = seg.B - seg.A
     pb = P - seg.A
 
-    denom = sum(ab.^2)
+    denom = normsquared(ab)
     if denom == 0.0
         return 0.0
     end

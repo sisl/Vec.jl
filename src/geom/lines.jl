@@ -27,7 +27,7 @@ function get_distance(line::Line, P::VecE2)
     ab = polar(1.0, line.θ)
     pb = P - line.C
 
-    denom = sum(ab.^2)
+    denom = normsquared(ab)
     if denom ≈ 0.0
         return 0.0
     end

@@ -24,7 +24,6 @@ c = VecSE2(VecE2(0.0,0.0),0.0)
 @test convert(Vector{Float64}, a) == [0.0,0.0,0.0]
 @test convert(VecSE2, [1.0,2.0,3.0]) == VecSE2(1.0,2.0,3.0)
 @test convert(VecE2, VecSE2(1.0,2.0,3.0)) == VecE2(1.0,2.0)
-@test convert(VecE3, VecSE2(1.0,2.0,3.0)) == VecE3(1.0,2.0,3.0)
 
 @test isapprox(polar( 1.0, 0.0, 0.5), VecSE2(1.0,0.0,0.5))
 @test isapprox(polar( 2.0, π/2,-0.5), VecSE2(0.0,2.0,-0.5))
@@ -33,36 +32,35 @@ c = VecSE2(VecE2(0.0,0.0),0.0)
 
 a = VecSE2(0.0,1.0,π/2)
 b = VecSE2(0.5,2.0,-π)
+unit_e2 = VecE2(1.0, 1.0)
 
 @test a != b
 
 @test a + b == VecSE2(0.5, 3.0, -π/2)
-@test a + 1 == VecSE2(1.0, 2.0,  π/2)
-@test a + 0.5 == VecSE2(0.5, 1.5, π/2)
-@test 1 + a == VecSE2(1.0, 2.0,  π/2)
-@test 0.5 + a == VecSE2(0.5, 1.5, π/2)
+@test a + 1*unit_e2 == VecSE2(1.0, 2.0,  π/2)
+@test a + 0.5*unit_e2 == VecSE2(0.5, 1.5, π/2)
+@test 1*unit_e2 + a == VecSE2(1.0, 2.0,  π/2)
+@test 0.5*unit_e2 + a == VecSE2(0.5, 1.5, π/2)
 
 @test a - b == VecSE2(-0.5, -1.0, 3π/2)
-@test a - 1 == VecSE2(-1.0,  0.0,  π/2)
-@test a - 0.5 == VecSE2(-0.5, 0.5, π/2)
-@test 1 - a == VecSE2(1.0,  0.0,  π/2)
-@test 0.5 - a == VecSE2(0.5, -0.5, π/2)
+@test a - 1*unit_e2 == VecSE2(-1.0,  0.0,  π/2)
+@test a - 0.5*unit_e2 == VecSE2(-0.5, 0.5, π/2)
+@test 1*unit_e2 - a == VecSE2(1.0,  0.0, -π/2)
+@test 0.5*unit_e2 - a == VecSE2(0.5, -0.5, -π/2)
 
-@test a * 2 == VecSE2(0.0, 2.0, π/2)
-@test a * 0.5 == VecSE2(0.0, 0.5, π/2)
-@test 2a == VecSE2(0.0, 2.0, π/2)
-@test 0.5a == VecSE2(0.0, 0.5, π/2)
+@test scale_euclidean(a, 2) == VecSE2(0.0, 2.0, π/2)
+@test scale_euclidean(a, 0.5) == VecSE2(0.0, 0.5, π/2)
 
-@test a / 2 == VecSE2(0.0, 0.5, π/2)
-@test a / 0.5 == VecSE2(0.0, 2.0, π/2)
+@test scale_euclidean(a, 1/2) == VecSE2(0.0, 0.5, π/2)
+@test scale_euclidean(a, 1/0.5) == VecSE2(0.0, 2.0, π/2)
 
-@test b^2 == VecSE2(0.25, 4.0, -π)
-@test b^0.5 == VecSE2(0.5^0.5, 2.0^0.5, -π)
+# @test b^2 == VecSE2(0.25, 4.0, -π)
+# @test b^0.5 == VecSE2(0.5^0.5, 2.0^0.5, -π)
+# 
+# @test a % 2.0 == VecSE2(0.0, 1.0, π/2)
 
-@test a % 2.0 == VecSE2(0.0, 1.0, π/2)
-
-@test clamp(VecSE2(1.0, 10.0, 0.5), 0.0, 5.0) == VecSE2(1.0, 5.0, 0.5)
-@test clamp(VecSE2(-1.0, 4.0, 5.5), 0.0, 5.0) == VecSE2(0.0, 4.0, 5.5)
+@test clamp_euclidean(VecSE2(1.0, 10.0, 0.5), 0.0, 5.0) == VecSE2(1.0, 5.0, 0.5)
+@test clamp_euclidean(VecSE2(-1.0, 4.0, 5.5), 0.0, 5.0) == VecSE2(0.0, 4.0, 5.5)
 
 @test isfinite(a)
 @test !isfinite(VecSE2(Inf,0))

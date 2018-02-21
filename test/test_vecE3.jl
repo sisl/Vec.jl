@@ -41,8 +41,8 @@ b = VecE3(0.5,2.0,-3.0)
 @test a / 2 == VecE3(0.0, 0.5, 1.0)
 @test a / 0.5 == VecE3(0.0, 2.0, 4.0)
 
-@test b^2 == VecE3(0.25, 4.0, 9.0)
-@test VecE3(0.5, 2.0, 3.0)^0.5 == VecE3(0.5^0.5, 2.0^0.5, 3.0^0.5)
+@test b.^2 == VecE3(0.25, 4.0, 9.0)
+@test VecE3(0.5, 2.0, 3.0).^0.5 == VecE3(0.5^0.5, 2.0^0.5, 3.0^0.5)
 
 # @test a % 2.0 == VecE3(0.0, 1.0, 0.0)
 # @test a % 2 == VecE3(0.0, 1.0, 0.0)
@@ -64,28 +64,27 @@ b = VecE3(0.5,2.0,-3.0)
 @test isnan(VecE3(0,NaN,NaN))
 @test isnan(VecE3(NaN,NaN,NaN))
 
-@test round(VecE3(0.25,1.75,0)) == VecE3(0.0,2.0,0.0)
-@test round(VecE3(-0.25,-1.75,0)) == VecE3(-0.0,-2.0,0.0)
+@test round.(VecE3(0.25,1.75,0)) == VecE3(0.0,2.0,0.0)
+@test round.(VecE3(-0.25,-1.75,0)) == VecE3(-0.0,-2.0,0.0)
 
-@test floor(VecE3(0.25,1.75,0.0)) == VecE3(0.0,1.0,0.0)
-@test floor(VecE3(-0.25,-1.75,0.0)) == VecE3(-1.0,-2.0,0.0)
+@test floor.(VecE3(0.25,1.75,0.0)) == VecE3(0.0,1.0,0.0)
+@test floor.(VecE3(-0.25,-1.75,0.0)) == VecE3(-1.0,-2.0,0.0)
 
-@test ceil(VecE3(0.25,1.75,0.0)) == VecE3(1.0,2.0,0.0)
-@test ceil(VecE3(-0.25,-1.75,0.0)) == VecE3(-0.0,-1.0,0.0)
+@test ceil.(VecE3(0.25,1.75,0.0)) == VecE3(1.0,2.0,0.0)
+@test ceil.(VecE3(-0.25,-1.75,0.0)) == VecE3(-0.0,-1.0,0.0)
 
-@test trunc(VecE3(0.25,1.75,0.0)) == VecE3(0.0,1.0,0.0)
-@test trunc(VecE3(-0.25,-1.75,0.0)) == VecE3(-0.0,-1.0,0.0)
+@test trunc.(VecE3(0.25,1.75,0.0)) == VecE3(0.0,1.0,0.0)
+@test trunc.(VecE3(-0.25,-1.75,0.0)) == VecE3(-0.0,-1.0,0.0)
 
-@test clamp(VecE3(1.0, 10.0, 0.5), 0.0, 5.0) == VecE3(1.0, 5.0, 0.5)
-@test clamp(VecE3(-1.0, 4.0, 5.5), 0.0, 5.0) == VecE3(0.0, 4.0, 5.0)
+@test clamp.(VecE3(1.0, 10.0, 0.5), 0.0, 5.0) == VecE3(1.0, 5.0, 0.5)
+@test clamp.(VecE3(-1.0, 4.0, 5.5), 0.0, 5.0) == VecE3(0.0, 4.0, 5.0)
 
 c = VecE3(3.0,4.0,5.0)
 
-@test isapprox(abs(a), hypot(1.0,2.0))
-@test isapprox(abs(c), norm([3.0,4.0,5.0]))
-@test isapprox(abs2(a), 5.0)
-@test isapprox(abs2(c), 9 + 16 + 25)
-@test isapprox(norm(a), VecE3(0.0,1.0/hypot(1.0,2.0), 2.0/hypot(1.0,2.0)))
+@test isapprox(abs.(a), a)
+@test isapprox(abs.(c), c)
+@test isapprox(norm(c), sqrt(3^2 + 4^2 + 5^2))
+@test isapprox(normalize(a), VecE3(0.0,1.0/hypot(1.0,2.0), 2.0/hypot(1.0,2.0)))
 
 @test isapprox(dist(a,a), 0.0)
 @test isapprox(dist(b,b), 0.0)
@@ -101,10 +100,10 @@ c = VecE3(3.0,4.0,5.0)
 
 @test isapprox(dot(a, b), 2.0 - 6.0)
 @test isapprox(dot(b, c), 1.5 + 8.0 - 15.0)
-@test isapprox(dot(c, c), abs2(c))
+@test isapprox(dot(c, c), norm(c)^2)
 
-@test isapprox(proj(b, a, Float64), -abs(VecE3(0.0, -0.8, -1.6)))
-@test isapprox(proj(c, a, Float64),  abs(VecE3(0.0,  2.8,  5.6)))
+@test isapprox(proj(b, a, Float64), -norm(VecE3(0.0, -0.8, -1.6)))
+@test isapprox(proj(c, a, Float64),  norm(VecE3(0.0,  2.8,  5.6)))
 
 @test isapprox(proj(b, a, VecE3), VecE3(0.0, -0.8, -1.6))
 @test isapprox(proj(c, a, VecE3), VecE3(0.0,  2.8,  5.6))

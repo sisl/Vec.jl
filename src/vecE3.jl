@@ -3,59 +3,16 @@ VecE3: a 3d euclidean vector
 =#
 
 
-struct VecE3 <: VecE
-    x :: Float64
-    y :: Float64
-    z :: Float64
-
-    VecE3() = new(0.0,0.0,0.0)
-    VecE3(x::Real, y::Real, z::Real) = new(x,y,z)
+struct VecE3{R<:Real} <: VecE{3,R}
+    x::R
+    y::R
+    z::R
 end
+VecE3() = VecE3(0.0,0.0,0.0)
+VecE3(x::Integer, y::Integer, z::Integer) = VecE3(float(x), float(y), float(z))
+VecE3(t::Tuple) = VecE3(promote(t...)...)
 
-Base.length(::VecE3) = 3
-Base.copy(a::VecE3) = VecE3(a.x, a.y, a.z)
-Base.convert(::Type{Vector{Float64}}, a::VecE3) = [a.x, a.y, a.z]
-function Base.convert(::Type{VecE3}, a::AbstractArray{R}) where R<:Real
-    @assert(length(a) == 3)
-    VecE3(a[1], a[2], a[3])
-end
 Base.show(io::IO, a::VecE3) = @printf(io, "VecE3(%.3f, %.3f, %.3f)", a.x, a.y, a.z)
-
-Base.:+(a::VecE3, b::Real) = VecE3(a.x+b, a.y+b, a.z+b)
-Base.:+(a::VecE3, b::VecE3) = VecE3(a.x+b.x, a.y+b.y, a.z+b.z)
-
-Base.:-(a::VecE3) = VecE3(-a.x, -a.y, -a.z)
-Base.:-(a::VecE3, b::Real) = VecE3(a.x-b, a.y-b, a.z-b)
-Base.:-(a::VecE3, b::VecE3) = VecE3(a.x-b.x, a.y-b.y, a.z-b.z)
-
-Base.:*(a::VecE3, b::Real) = VecE3(a.x*b, a.y*b, a.z*b)
-
-Base.:/(a::VecE3, b::Real) = VecE3(a.x/b, a.y/b, a.z/b)
-
-Base.:^(a::VecE3, b::Integer) = VecE3(a.x^b, a.y^b, a.z^b)
-Base.:^(a::VecE3, b::AbstractFloat) = VecE3(a.x^b, a.y^b, a.z^b)
-
-# %(a::VecE3, b::Real) = VecE3(a.x%b, a.y%b, a.z%b)
-
-Base.:(==)(a::VecE3, b::VecE3) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.z, b.z)
-Base.isequal(a::VecE3, b::VecE3) = isequal(a.x, b.x) && isequal(a.y, b.y) && isequal(a.z, b.z)
-
-Base.isfinite(a::VecE3) = isfinite(a.x) && isfinite(a.y) && isfinite(a.z)
-Base.isinf(a::VecE3) = isinf(a.x) || isinf(a.y) || isinf(a.z)
-Base.isnan(a::VecE3) = isnan(a.x) || isnan(a.y) || isnan(a.z)
-
-Base.round(a::VecE3) = VecE3(round(a.x), round(a.y), round(a.z))
-Base.floor(a::VecE3) = VecE3(floor(a.x), floor(a.y), floor(a.z))
-Base.ceil(a::VecE3) = VecE3(ceil(a.x), ceil(a.y), ceil(a.z))
-Base.trunc(a::VecE3) = VecE3(trunc(a.x), trunc(a.y), trunc(a.z))
-Base.clamp(a::VecE3, lo::Real, hi::Real) = VecE3(clamp(a.x, lo, hi), clamp(a.y, lo, hi), clamp(a.z, lo, hi))
-
-Base.abs(a::VecE3) = sqrt(a.x*a.x + a.y*a.y + a.z*a.z)
-Base.abs2(a::VecE3) = a.x*a.x + a.y*a.y + a.z*a.z
-function Base.norm(a::VecE3)
-    m = abs(a)
-    VecE3(a.x/m, a.y/m, a.z/m)
-end
 
 function dist(a::VecE3, b::VecE3)
     Δx = a.x-b.x
@@ -70,19 +27,11 @@ function dist2(a::VecE3, b::VecE3)
     Δx*Δx + Δy*Δy + Δz*Δz
 end
 
-Base.dot(a::VecE3, b::VecE3) = a.x*b.x + a.y*b.y + a.z*b.z
 proj(a::VecE3, b::VecE3, ::Type{Float64}) = (a.x*b.x + a.y*b.y + a.z*b.z) / sqrt(b.x*b.x + b.y*b.y + b.z*b.z) # dot(a,b) / |b|
 function proj(a::VecE3, b::VecE3, ::Type{VecE3})
     # dot(a,b) / dot(b,b) ⋅ b
     s = (a.x*b.x + a.y*b.y + a.z*b.z) / (b.x*b.x + b.y*b.y + b.z*b.z)
     VecE3(s*b.x, s*b.y, s*b.z)
-end
-
-function Base.cross(a::VecE3, b::VecE3)
-    x = a.y*b.z - a.z*b.y
-    y = a.x*b.z - a.z*b.x
-    z = a.x*b.y - a.y*b.x
-    VecE3(x,y,z)
 end
 
 lerp(a::VecE3, b::VecE3, t::Real) = VecE3(a.x + (b.x-a.x)*t, a.y + (b.y-a.y)*t, a.z + (b.z-a.z)*t)

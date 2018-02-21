@@ -2,7 +2,7 @@ __precompile__()
 
 module Vec
 
-# using Compat
+using StaticArrays
 
 export
     AbstractVec,
@@ -22,6 +22,11 @@ export
     lerp,  # linear interpolation between two vec's
     invlerp,
     lerp_angle,
+
+    normsquared,         # see docstrings below
+    scale_euclidean,
+    clamp_euclidean,
+    normalize_euclidian,
 
     dist,  # scalar distance between two vec's
     dist2, # squared scalar distance between two vec's
@@ -43,28 +48,29 @@ export
     AABB,
     OBB
 
-abstract type AbstractVec end
-abstract type VecE <: AbstractVec end
-abstract type VecSE <: AbstractVec end
+abstract type AbstractVec{N, R} <: FieldVector{N, R} end
+abstract type VecE{N, R} <: AbstractVec{N, R} end
+abstract type VecSE{N, R} <: AbstractVec{N, R} end
 
 lerp(a::Real, b::Real, t::Real) = a + (b-a)*t
 invlerp(a::Real, b::Real, c::Real) = (c - a)/(b-a)
 
+"The L2 norm squared."
+normsquared(a::AbstractVec) = sum(x^2 for x in a)
+
+"Scale the euclidean part of the vector by a factor b while leaving the orientation part unchanged."
+scale_euclidean(a::VecE, b::Real) = b.*a
+
+"Clamp each element of the euclidean part of the vector while leaving the orientation part unchanged."
+clamp_euclidean(a::VecE, lo::Real, hi::Real) = clamp.(a, lo, hi)
+
+"Normalize the euclidean part of the vector while leaving the orientation part unchanged."
+normalize_euclidian(a::VecE, p::Real=2) = normalize(a, p)
+
+include("common.jl")
 include("vecE2.jl")
 include("vecE3.jl")
 include("vecSE2.jl")
-
-function Base.isapprox(a::VecE, b::VecE;
-    _absa::Float64 = abs(a),
-    _absb::Float64 = abs(b),
-    _maxeps::Float64 = max(eps(_absa), eps(_absb)),
-    rtol::Real=cbrt(_maxeps),
-    atol::Real=sqrt(_maxeps)
-    )
-
-    dist2(a, b) <= atol + rtol*max(_absa, _absb)
-end
-lerp(a::Real, b::Real, t::AbstractFloat) = a + (b-a)*t
 
 include("geom/geom.jl")
 include("coordinate_transforms.jl")

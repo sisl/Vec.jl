@@ -21,7 +21,7 @@ function closest_time_of_approach(A::Projectile, B::Projectile)
 
     W = convert(VecE2, A.pos - B.pos)
     Δ = polar(A.v, A.pos.θ) - polar(B.v, B.pos.θ)
-    aΔ = abs2(Δ)
+    aΔ = normsquared(Δ)
 
     if aΔ ≈ 0.0
         return 0.0
@@ -32,7 +32,7 @@ end
 function closest_approach_distance(A::Projectile, B::Projectile, t_CPA::Float64=closest_time_of_approach(A, B))
     Aₜ = convert(VecE2, propagate(A, t_CPA).pos)
     Bₜ = convert(VecE2, propagate(B, t_CPA).pos)
-    return abs(Aₜ - Bₜ)
+    return norm(Aₜ - Bₜ)
 end
 function closest_time_of_approach_and_distance(A::Projectile, B::Projectile)
     t_CPA = closest_time_of_approach(A, B)
@@ -59,8 +59,8 @@ function get_intersection_time(A::Projectile, seg::LineSegment)
         # denom is zero if the segment and the projectile are parallel
         # only collide if they are perfectly aligned
         if are_collinear(A.pos, seg.A, seg.B)
-            dist_a = abs2(seg.A - o)
-            dist_b = abs2(seg.B - o)
+            dist_a = normsquared(seg.A - o)
+            dist_b = normsquared(seg.B - o)
             return sqrt(min(dist_a, dist_b)) / A.v
         end
     end
@@ -90,12 +90,12 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
                 r = polar(1.0, P.pos.θ)
                 projA = proj(seg.A - o, r, VecE2)
                 projB = proj(seg.B - o, r, VecE2)
-                tA = max(abs(projA)/P.v * sign(dot(r, projA)), 0.0)
-                tB = max(abs(projB)/P.v * sign(dot(r, projB)), 0.0)
+                tA = max(norm(projA)/P.v * sign(dot(r, projA)), 0.0)
+                tB = max(norm(projB)/P.v * sign(dot(r, projB)), 0.0)
                 pA = VecE2(propagate(P, tA).pos)
                 pB = VecE2(propagate(P, tB).pos)
-                distA = abs2(seg.A - pA)
-                distB = abs2(seg.B - pB)
+                distA = normsquared(seg.A - pA)
+                distB = normsquared(seg.B - pB)
                 if distA < distB
                     return (tA, sqrt(distA))
                 else
@@ -110,8 +110,8 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
         # only collide if they are perfectly aligned
         if are_collinear(P.pos, seg.A, seg.B)
             # either closest now, will be to A, or will be to B
-            dist_a = abs2(seg.A - o)
-            dist_b = abs2(seg.B - o)
+            dist_a = normsquared(seg.A - o)
+            dist_b = normsquared(seg.B - o)
             t = sqrt(min(dist_a, dist_b)) / P.v
             return (t, 0.0)
         else
@@ -121,12 +121,12 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
                 r = polar(1.0, P.pos.θ)
                 projA = proj(seg.A - o, r, VecE2)
                 projB = proj(seg.B - o, r, VecE2)
-                tA = max(abs(projA)/P.v * sign(dot(r, projA)), 0.0)
-                tB = max(abs(projB)/P.v * sign(dot(r, projB)), 0.0)
+                tA = max(norm(projA)/P.v * sign(dot(r, projA)), 0.0)
+                tB = max(norm(projB)/P.v * sign(dot(r, projB)), 0.0)
                 pA = VecE2(propagate(P, tA).pos)
                 pB = VecE2(propagate(P, tB).pos)
-                distA = abs2(seg.A - pA)
-                distB = abs2(seg.B - pB)
+                distA = normsquared(seg.A - pA)
+                distB = normsquared(seg.B - pB)
                 if distA < distB
                     return (tA, distA)
                 else

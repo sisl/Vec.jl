@@ -8,7 +8,7 @@ Provides 2D and 3D vector types for vector operations in Julia.
 # Git It
 
 ```julia
-Pkg.clone("https://github.com/tawheeler/Vec.jl.git")
+Pkg.clone("https://github.com/sisl/Vec.jl.git")
 ```
 
 # Usage

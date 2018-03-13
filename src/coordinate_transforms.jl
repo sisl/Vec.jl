@@ -418,12 +418,13 @@ function Base.convert(::Type{ECEF}, enu::ENU, reference::LatLonAlt)
 
     ECEF(ecef[1] + ref_ecef.x, ecef[2] + ref_ecef.y, ecef[3] +  ref_ecef.z)
 end
-function Base.convert(::Type{ENU}, ecef::ECEF, reference::LatLonAlt)
+function Base.convert(::Type{ENU}, ecef::ECEF, refLLA::LatLonAlt, refECEF::ECEF=convert(ECEF, refLLA))
 
     # http://www.navipedia.net/index.php/Transformations_between_ECEF_and_ENU_coordinates
 
-    ϕ = reference.lat
-    λ = reference.lon
+    ϕ = refLLA.lat
+    λ = refLLA.lon
+    a = refLLA.alt
 
     sϕ, cϕ = sin(ϕ), cos(ϕ)
     sλ, cλ = sin(λ), cos(λ)
@@ -432,7 +433,7 @@ function Base.convert(::Type{ENU}, ecef::ECEF, reference::LatLonAlt)
          -cλ*sϕ  -sλ*sϕ  cϕ;
           cλ*cϕ   sλ*cϕ  sϕ]
 
-    p = [ecef.x, ecef.y, ecef.z]
+    p = [ecef.x - refECEF.x, ecef.y - refECEF.y, ecef.z - refECEF.z]
     enu = R*p
 
     ENU(enu[1], enu[2], enu[3])

@@ -167,6 +167,18 @@ Base.convert(::Type{ENU}, p::VecE3) = ENU(p.x, p.y, p.z)
 Base.:+(a::ENU, b::ENU) = ENU(a.e+b.e, a.n+b.n, a.u+b.u)
 Base.:-(a::ENU, b::ENU) = ENU(a.e-b.e, a.n-b.n, a.u-b.u)
 
+"""
+North East Down coordinate system
+"""
+struct NED <: AbstractCoordinate
+    n::Float64 # [m]
+    e::Float64 # [m]
+    d::Float64 # [m] below reference location
+end
+Base.convert(::Type{VecE3}, p::NED) = VecE3(p.n, p.e, p.d)
+Base.:+(a::NED, b::NED) = NED(a.n+b.n, a.e+b.e, a.d+b.d)
+Base.:-(a::NED, b::NED) = NED(a.n-b.n, a.e-b.e, a.d-b.d)
+
 ###################
 
 function Base.convert(::Type{ECEF}, lla::LatLonAlt, datum::GeodeticDatum=WGS_84)
@@ -438,3 +450,6 @@ function Base.convert(::Type{ENU}, ecef::ECEF, refLLA::LatLonAlt, refECEF::ECEF=
 
     ENU(enu[1], enu[2], enu[3])
 end
+
+Base.convert(::Type{NED}, enu::ENU) = NED(enu.n, enu.e, -enu.u)
+Base.convert(::Type{ENU}, ned::NED) = ENU(ned.e, ned.n, -ned.d)

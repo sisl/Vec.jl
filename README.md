@@ -17,7 +17,7 @@ Pkg.clone("https://github.com/sisl/Vec.jl.git")
 
 * `VecE2` provides an (x,y) type of the Euclidean-2 group.
 * `VecE3` provides an (x,y,z) type of the Euclidean-3 group.
-* `VecSE2` provides an (x,y,theta) type of the special-euclidean 2 group.
+* `VecSE2` provides an (x,y,theta) type of the special-Euclidean 2 group.
 
 ```julia
 v = VecE2(0, 1)

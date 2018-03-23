@@ -241,3 +241,44 @@ let
     @test isapprox(box2.aabb.center.y,  0.0, atol=1e-10)
     @test isapprox(angledist(box2.θ,  π), 0.0, atol=1e-10)
 end
+
+let
+    plane = Plane3()
+    @test plane.normal == VecE3(1.0,0.0,0.0)
+    @test plane.offset == 0.0
+
+    plane = Plane3(VecE3(2.0,0.0,0.0), 0.5)
+    @test plane.normal == VecE3(1.0,0.0,0.0)
+    @test plane.offset == 0.5
+
+    plane = Plane3(VecE3(2.0,0.0,0.0), VecE3(0.0,0.0,0.0))
+    @test plane.normal == VecE3(1.0,0.0,0.0)
+    @test plane.offset == 0.0
+
+    plane = Plane3(VecE3(2.0,0.0,0.0), VecE3(1.0,1.0,1.0))
+    @test plane.normal == VecE3(1.0,0.0,0.0)
+    @test isapprox(plane.offset, -1.0, atol=1e-10)
+
+    plane = Plane3(VecE3(1.0,1.0,0.0), VecE3(1.0,0.0,0.0), VecE3(0.0,0.0,0.0))
+    @test norm(plane.normal - VecE3(0.0,0.0,1.0)) < 1e-8
+    @test isapprox(plane.offset, 0.0, atol=1e-10)
+
+    plane = Plane3(VecE3(0.0,0.0,0.0), VecE3(1.0,0.0,0.0), VecE3(1.0,1.0,0.0))
+    @test norm(plane.normal - VecE3(0.0,0.0,-1.0)) < 1e-8
+    @test isapprox(plane.offset, 0.0, atol=1e-10)
+
+    plane = Plane3()
+    @test isapprox(get_signed_distance(plane, VecE3( 0.0,0.0,0.0)),  0.0, atol=1e-10)
+    @test isapprox(get_signed_distance(plane, VecE3( 1.0,0.0,0.0)),  1.0, atol=1e-10)
+    @test isapprox(get_signed_distance(plane, VecE3(-1.0,0.0,0.0)), -1.0, atol=1e-10)
+    @test isapprox(get_signed_distance(plane, VecE3( 1.0,0.5,0.7)),  1.0, atol=1e-10)
+    @test isapprox(get_signed_distance(plane, VecE3(-1.0,0.7,0.5)), -1.0, atol=1e-10)
+    @test isapprox(get_distance(plane, VecE3(-1.0,0.7,0.5)), 1.0, atol=1e-10)
+    @test norm(proj(VecE3(-1.0,0.7,0.5), plane) - VecE3(0.0,0.7,0.5)) < 1e-10
+    @test get_side(plane, VecE3( 0.0,0.0,0.0)) ==  0
+    @test get_side(plane, VecE3( 1.0,0.0,0.0)) ==  1
+    @test get_side(plane, VecE3(-1.0,0.0,0.0)) == -1
+    @test get_side(plane, VecE3( 1.0,0.5,0.7)) ==  1
+    @test get_side(plane, VecE3(-1.0,0.7,0.5)) == -1
+
+end

@@ -25,6 +25,6 @@ v = VecSE2(0,1,0.5)
 v = VecE3(0, 1, 2)
 ```
 
-Additional geometry types include `Quat` for quaternions, `LineSegment`s, and `Projectile`s.
+Additional geometry types include `Quat` for quaternions, `Line`, `LineSegment`, and `Projectile`.
 
 The switch to StaticArrays brings several breaking changes. If you need a backwards-compatible version, please checkout the `v0.1.0` tag with ```cd(Pkg.dir("Vec")); run(`git checkout v0.1.0`)```.

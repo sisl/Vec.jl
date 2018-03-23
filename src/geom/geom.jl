@@ -10,13 +10,19 @@ Return the minimum δ such that
 """
 deltaangle(a::Real, b::Real) = atan2(sin(b-a), cos(b-a))
 
-# distance between two angles
+"""
+Distance between two angles
+"""
 angledist( a::Real, b::Real ) = abs(deltaangle(a,b))
 
-# linear interpolation between angles
+"""
+Linear interpolation between angles
+"""
 lerp_angle(a::Real, b::Real, t::AbstractFloat) = a + deltaangle(a, b)*t
 
-# true if the values are collinear within a tolerance
+"""
+True if the values are collinear within a tolerance
+"""
 function are_collinear(a::AbstractVec, b::AbstractVec, c::AbstractVec, tol::Float64=1e-8)
     # http://mathworld.wolfram.com/Collinear.html
     # if val = 0 then they are collinear

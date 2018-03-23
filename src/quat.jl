@@ -1,5 +1,6 @@
 export
     Quat,
+    quat_for_a2b,
     get_axis,
     get_rotation_angle,
 
@@ -11,9 +12,132 @@ struct Quat <: FieldVector{4, Float64}
     z::Float64
     w::Float64
 end
+Quat(v::VecE3, w::Float64) = Quat(v.x, v.y, v.z, w)
 
-Base.show(io::IO, q::Quat) = @printf(io, "QUAT({%6.3f, %6.3f, %6.3f}, %6.3f)", q.x, q.y, q.z, q.w)
+Base.show(io::IO, q::Quat) = @printf(io, "Quat({%6.3f, %6.3f, %6.3f}, %6.3f)", q.x, q.y, q.z, q.w)
 
+"""
+Conjugate of a quaternion
+"""
+Base.conj(q::Quat) = Quat(-q.x,-q.y,-q.z, q.w)
+
+"""
+A VecE3 of the imaginary part (x,y,z)
+"""
+Base.imag(q::Quat) = VecE3(q.x, q.y, q.z)
+
+"""
+Return the multiplicative inverse of q.
+Note that in most cases, i.e., if you simply want the opposite rotation,
+and/or the quaternion is normalized, then it is enough to use the conjugate.
+Based on Eigen's inverse.
+
+Returns the zero Quat if q is zero.
+"""
+function Base.inv(q::Quat)
+  n2 = q.x^2 + q.y^2 + q.z^2 + q.w^2 # squared norm
+  if n2 > 0
+    return Quat(conj(q) / n2)
+  else
+    # return an invalid result to flag the error
+    return Quat(0.0,0.0,0.0,0.0)
+  end
+end
+
+"""
+Rotate a vector by a quaternion.
+If you are going to rotate a bunch of vectors, covert q to a rotation matrix first.
+
+Based on the Eigen implementation for _transformVector
+"""
+function Base.:*(q::Quat, v::VecE3)
+    uv = imag(q)×v
+    uv += uv
+    return v + q.w*uv + imag(q)×uv;
+end
+
+"""
+Quaternion multiplication
+"""
+function Base.:*(a::Quat, b::Quat)
+    r1, v1 = a.w, imag(a)
+    r2, v2 = b.w, imag(b)
+    return Quat(r1*v2 + r2*v1 + v1×v2, r1*r2 - v1⋅v2)
+end
+
+"""
+The angle (in radians) between two rotations
+"""
+function angledist(a::Quat, b::Quat)
+    d = a * conj(b)
+    return 2*atan2(norm(imag(d)), abs(d.w))
+end
+
+"""
+The quaternion that transforms a into b through a rotation
+Based on Eigen's implementation for setFromTwoVectors
+"""
+function quat_for_a2b(a::VecE3, b::VecE3)
+    v0 = normalize(a)
+    v1 = normalize(b)
+    c = v1⋅v0
+
+    # if dot == -1, vectors are nearly opposites
+    # => accurately compute the rotation axis by computing the
+    #    intersection of the two planes. This is done by solving:
+    #       x^T v0 = 0
+    #       x^T v1 = 0
+    #    under the constraint:
+    #       ||x|| = 1
+    #    which yields a singular value problem
+    if c < -1.0 + DUMMY_PRECISION
+        c = max(c, -1.0)
+        M = hcat(convert(Vector{Float64}, v0),
+                 convert(Vector{Float64}, v1))'
+        s = svdfact(M, thin=false)
+        axis = convert(VecE3, s[:V][:,2])
+        w2 = (1.0 + c)*0.5
+        return Quat(axis * sqrt(1.0 - w2), sqrt(w2))
+    else
+        axis = v0×v1
+        s = sqrt((1.0+c)*2.0)
+        invs = 1.0/s
+        return Quat(axis * invs, s * 0.5)
+    end
+end
+
+"""
+Returns the spherical linear interpolation between the two quaternions
+a and b for t ∈ [0,1].
+
+Based on the Eigen implementation for slerp.
+"""
+function lerp(a::Quat, b::Quat, t::Float64)
+  
+    d = a⋅b
+    absD = abs(d)
+
+    if(absD ≥ 1.0 - eps())
+        scale0, scale1 = 1.0 - t, t
+    else
+        # θ is the angle between the 2 quaternions
+        θ = acos(absD)
+        sinθ = sin(θ)
+
+        scale0, scale1 = sin( ( 1.0 - t ) * θ) / sinθ,
+                         sin( ( t * θ) ) / sinθ
+    end
+
+    if d < 0
+        scale1 = -scale1
+    end
+
+    return Quat(scale0*a + scale1*b)
+end
+
+"""
+The rotation axis for a quaternion.
+"""
 function get_axis(q::Quat)
 
     θ = 2*atan2(sqrt(q.x*q.x + q.y*q.y + q.z*q.z), q.w)
@@ -25,7 +149,25 @@ function get_axis(q::Quat)
 
     VecE3(x, y, z)
 end
+
+"""
+The rotation angle for a quaternion.
+"""
 get_rotation_angle(q::Quat) = 2.0*acos(q.w)
+
+"""
+Draw a random unit quaternion following a uniform distribution law on SO(3).
+
+Based on the Eigen implementation for UnitRandom.
+"""
+function Base.rand(::Type{Quat})
+    u1 = rand()
+    u2 = 2π*rand()
+    u3 = 2π*rand()
+    a = sqrt(1 - u1)
+    b = sqrt(u1)
+    return Quat(a*sin(u2), a*cos(u2), b*sin(u3), b*cos(u3))
+end
 
 """
 Roll Pitch Yaw

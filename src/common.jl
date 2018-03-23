@@ -1,3 +1,5 @@
+const DUMMY_PRECISION = 1e-12
+
 Base.isfinite(a::AbstractVec) = all(isfinite.(a))
 Base.isinf(a::AbstractVec) = any(isinf.(a))
 

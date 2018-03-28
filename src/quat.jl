@@ -13,6 +13,7 @@ struct Quat <: FieldVector{4, Float64}
     w::Float64
 end
 Quat(v::VecE3, w::Float64) = Quat(v.x, v.y, v.z, w)
+Quat(w::Float64, v::VecE3) = Quat(v.x, v.y, v.z, w)
 
 Base.show(io::IO, q::Quat) = @printf(io, "Quat({%6.3f, %6.3f, %6.3f}, %6.3f)", q.x, q.y, q.z, q.w)
 
@@ -50,7 +51,7 @@ If you are going to rotate a bunch of vectors, covert q to a rotation matrix fir
 
 Based on the Eigen implementation for _transformVector
 """
-function Base.:*(q::Quat, v::VecE3)
+function rot(q::Quat, v::VecE3)
     uv = imag(q)×v
     uv += uv
     return v + q.w*uv + imag(q)×uv;
@@ -64,6 +65,8 @@ function Base.:*(a::Quat, b::Quat)
     r2, v2 = b.w, imag(b)
     return Quat(r1*v2 + r2*v1 + v1×v2, r1*r2 - v1⋅v2)
 end
+Base.:*(v::VecE3, b::Quat) = Quat(0.0, v) * b
+Base.:*(a::Quat, v::VecE3) = a * Quat(0.0, v)
 
 """
 The angle (in radians) between two rotations
@@ -180,14 +183,28 @@ end
 function Base.convert(::Type{RPY}, q::Quat)
 
     q2 = normalize(q)
-    x = q.x
-    y = q.y
-    z = q.z
-    w = q.w
+    x = q2[1]
+    y = q2[2]
+    z = q2[3]
+    w = q2[4]
 
-    roll  = atan2(y*z+w*x, 0.5-x^2-y^2)
-    pitch = asin(-2*(x*z + w*y))
-    yaw   = atan2(x*y+w*z, 0.5-y^2-z^2)
+    # roll (x-axis rotation)
+    sinr = 2(w * x + y * z)
+    cosr = 1.0 - 2(x * x + y * y)
+    roll = atan2(sinr, cosr)
+
+    # pitch (y-axis rotation)
+    sinp = 2(w * y - z * x)
+    if (abs(sinp) >= 1)
+        pitch = π/2 * sign(sinp) # use 90 degrees if out of range
+    else
+        pitch = asin(sinp)
+    end
+
+    # yaw (z-axis rotation)
+    siny = 2(w * z + x * y)
+    cosy = 1.0 - 2(y * y + z * z) 
+    yaw = atan2(siny, cosy)
 
     RPY(roll, pitch, yaw)
 end
@@ -209,4 +226,19 @@ function Base.convert(::Type{Matrix{Float64}}, quat::Quat)
     [ 1 - (yy + zz)         xy - wz          xz + wy;
            xy + wz     1 - (xx + zz)         yz - wx;
            xz - wy          yz + wx     1 - (xx + yy) ]
+end
+function Base.convert(::Type{Quat}, rpy::RPY)
+    t0 = cos(rpy.y/2)
+    t1 = sin(rpy.y/2)
+    t2 = cos(rpy.r/2)
+    t3 = sin(rpy.r/2)
+    t4 = cos(rpy.p/2)
+    t5 = sin(rpy.p/2)
+
+    qw = t0 * t2 * t4 + t1 * t3 * t5
+    qx = t0 * t3 * t4 - t1 * t2 * t5
+    qy = t0 * t2 * t5 + t1 * t3 * t4
+    qz = t1 * t2 * t4 - t0 * t3 * t5
+
+    return Quat(qx, qy, qz, qw)
 end

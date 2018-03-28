@@ -179,7 +179,7 @@ struct RPY <: FieldVector{3, Float64}
 end
 function Base.convert(::Type{RPY}, q::Quat)
 
-    q2 = normalized(q)
+    q2 = normalize(q)
     x = q.x
     y = q.y
     z = q.z

@@ -39,7 +39,7 @@ end
 
 """
 What side of the line you are on
-Is -1 if on the left, 1 if on the right, and 0 if on the line
+Is 1 if on the left, -1 if on the right, and 0 if on the line
 """
 function get_side(line::Line, p::VecE2, ε::Float64=1e-10)
     ab = polar(1.0, line.θ)
@@ -47,6 +47,6 @@ function get_side(line::Line, p::VecE2, ε::Float64=1e-10)
     if abs(signed_dist) < ε
         return 0
     else
-        return sign(signed_dist)
+        return convert(Int, sign(signed_dist))
     end
 end

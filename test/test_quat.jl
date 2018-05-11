@@ -1,4 +1,4 @@
-let
+# let
     q = Quat(1.0,2.0,3.0,4.5)
     @test length(q) == 4
     @test imag(q) == VecE3(1.0,2.0,3.0)
@@ -20,7 +20,7 @@ let
         a = normalize(VecE3(rand(),rand(),rand()))
         b = normalize(VecE3(rand(),rand(),rand()))
         q = quat_for_a2b(a,b)
-        @test norm(q*a - b) < 1e-8
+        @test norm(rot(q, a) - b) < 1e-8
     end
 
     @test isapprox(angledist(Quat(1,0,0,0), Quat(0,1,0,0)), π, atol=1e-6)
@@ -33,4 +33,4 @@ let
         @test norm(inv(q)*q - Quat(0,0,0,1)) < 1e-8
         @test norm(q*inv(q) - Quat(0,0,0,1)) < 1e-8
     end
-end
+# end

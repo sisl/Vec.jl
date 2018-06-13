@@ -23,7 +23,7 @@ function intersects(A::Ray, B::Ray)
     return u > 0.0 && v > 0.0
 end
 function intersects(ray::Ray, line::Line;
-    ε::Float64 = 1e-10;
+    ε::Float64 = 1e-10,
     )
 
     v₁ = VecE2(ray) - line.C

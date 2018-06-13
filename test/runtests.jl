@@ -1,5 +1,5 @@
 using Vec
-using Base.Test
+using Test
 
 @test invlerp(0.0,1.0,0.5) ≈ 0.5
 @test invlerp(0.0,1.0,0.4) ≈ 0.4

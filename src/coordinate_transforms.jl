@@ -131,13 +131,12 @@ end
 Base.convert(::Type{VecE3}, p::ECEF) = VecE3(p.x, p.y, p.z)
 Base.convert(::Type{ECEF}, p::VecE3) = ECEF(p.x, p.y, p.z)
 
-"""
-Universal Transverse Mercator coordinate system
-"""
-
 const UTM_LATITUDE_LIMIT_NORTH = deg2rad(84)
 const UTM_LATITUDE_LIMIT_SOUTH = deg2rad(-80)
 
+"""
+Universal Transverse Mercator coordinate system
+"""
 struct UTM <: AbstractCoordinate
     e::Float64 # [m]
     n::Float64 # [m]
@@ -264,9 +263,9 @@ function Base.convert(::Type{UTM}, lla::LatLonAlt, datum::GeodeticDatum=WGS_84, 
         error("latitude $(rad2deg(lat)) is out of limits!")
     end
 
-    const FN = 0.0      # false northing, zero in the northern hemisphere
-    const FE = 500000.0 # false easting
-    const ko = 0.9996   # central scale factor
+    FN = 0.0      # false northing, zero in the northern hemisphere
+    FE = 500000.0 # false easting
+    ko = 0.9996   # central scale factor
 
     zone_centers = -177.0*pi/180 + 6.0*pi/180*collect(0:59) # longitudes of the zone centers
     if zone == -1

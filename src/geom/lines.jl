@@ -32,8 +32,8 @@ function get_distance(line::Line, P::VecE2)
         return 0.0
     end
 
-    r = dot(ab, pb)/denom
-    return norm(P - (line.C + r*ab))
+    r = (ab⋅pb)/denom
+    return LinearAlgebra.norm(P - (line.C + r*ab))
 end
 
 

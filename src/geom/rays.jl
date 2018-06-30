@@ -23,18 +23,17 @@ function intersects(A::Ray, B::Ray)
     return u > 0.0 && v > 0.0
 end
 function intersects(ray::Ray, line::Line;
-    ε::Float64 = 1e-10;
+    ε::Float64 = 1e-10,
     )
 
     v₁ = VecE2(ray) - line.C
     v₂ = polar(1.0, line.θ)
     v₃ = polar(1.0, ray.θ + π/2)
 
-    denom = dot(v₂, v₃)
+    denom = v₂⋅v₃
 
     if !(denom ≈ 0.0)
-        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
-        # t₂ = dot(v₁, v₃) / denom # time for line can be anything
+        t₁ = (v₂×v₁) / denom # time for ray (0 ≤ t₁)
         return -ε ≤ t₁
     else
         # denom is zero if the line and the ray are parallel
@@ -48,11 +47,11 @@ function intersects(ray::Ray, seg::LineSegment)
     v₂ = seg.B - seg.A
     v₃ = polar(1.0, ray.θ + π/2)
 
-    denom = dot(v₂, v₃)
+    denom = v₂⋅v₃
 
     if !isapprox(denom, 0.0, atol=1e-10)
-        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
-        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        t₁ = (v₂×v₁) / denom # time for ray (0 ≤ t₁)
+        t₂ = (v₁⋅v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
         return 0 ≤ t₁ && 0 ≤ t₂ ≤ 1
     else
         # denom is zero if the segment and the ray are parallel
@@ -60,7 +59,7 @@ function intersects(ray::Ray, seg::LineSegment)
         # must ensure that at least one point is in the positive ray direction
         r = polar(1.0, ray.θ)
         return are_collinear(R, seg.A, seg.B) &&
-               (dot(r, seg.A - R) ≥ 0 || dot(r, seg.B - R) ≥ 0)
+               (r⋅(seg.A - R) ≥ 0 || r⋅(seg.B - R) ≥ 0)
     end
 end
 
@@ -95,11 +94,11 @@ function Base.intersect(ray::Ray, seg::LineSegment)
     v₂ = seg.B - seg.A
     v₃ = polar(1.0, ray.θ + π/2)
 
-    denom = dot(v₂, v₃)
+    denom = v₂⋅v₃
 
     if !isapprox(denom, 0.0, atol=1e-10)
-        t₁ = cross(v₂, v₁) / denom # time for ray (0 ≤ t₁)
-        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        t₁ = (v₂×v₁) / denom # time for ray (0 ≤ t₁)
+        t₂ = (v₁⋅v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
         if 0 ≤ t₁ && 0 ≤ t₂ ≤ 1
             return R + polar(t₁, ray.θ)
         end
@@ -109,7 +108,7 @@ function Base.intersect(ray::Ray, seg::LineSegment)
         # must ensure that at least one point is in the positive ray direction
         r = polar(1.0, ray.θ)
         if are_collinear(R, seg.A, seg.B) &&
-               (dot(r, seg.A - R) ≥ 0 || dot(r, seg.B - R) ≥ 0)
+               (r⋅(seg.A - R) ≥ 0 || r⋅(seg.B - R) ≥ 0)
             return R
         end
     end

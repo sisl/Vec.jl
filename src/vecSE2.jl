@@ -48,9 +48,9 @@ Base.:%(a::VecSE2, b::Real) = error(op_overload_error)
 scale_euclidean(a::VecSE2, b::Real) = VecSE2(b*a.x, b*a.y, a.θ)
 clamp_euclidean(a::VecSE2, lo::Real, hi::Real) = VecSE2(clamp(a.x, lo, hi), clamp(a.y, lo, hi), a.θ)
 
-Base.norm(a::VecSE2, p::Real=2) = error("norm is not defined for VecSE2 - use norm(VecE2(v)) to get the norm of the Euclidean part")
+norm(a::VecSE2, p::Real=2) = error("norm is not defined for VecSE2 - use norm(VecE2(v)) to get the norm of the Euclidean part")
 normsquared(a::VecSE2) = norm(a)^2 # this will correctly throw an error
-Base.normalize(a::VecSE2, p::Real=2) = error("normalize is not defined for VecSE2. Use normalize_euclidean(v) to normalize the euclidean part of the vector")
+normalize(a::VecSE2, p::Real=2) = error("normalize is not defined for VecSE2. Use normalize_euclidean(v) to normalize the euclidean part of the vector")
 
 function normalize_euclidian(a::VecSE2, p::Real=2)
     n = norm(VecE2(a))

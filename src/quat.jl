@@ -73,7 +73,7 @@ The angle (in radians) between two rotations
 """
 function angledist(a::Quat, b::Quat)
     d = a * conj(b)
-    return 2*atan2(norm(imag(d)), abs(d.w))
+    return 2*atan2(LinearAlgebra.norm(imag(d)), abs(d.w))
 end
 
 """
@@ -81,8 +81,8 @@ The quaternion that transforms a into b through a rotation
 Based on Eigen's implementation for setFromTwoVectors
 """
 function quat_for_a2b(a::VecE3, b::VecE3)
-    v0 = normalize(a)
-    v1 = normalize(b)
+    v0 = LinearAlgebra.normalize(a)
+    v1 = LinearAlgebra.normalize(b)
     c = v1⋅v0
 
     # if dot == -1, vectors are nearly opposites
@@ -97,7 +97,7 @@ function quat_for_a2b(a::VecE3, b::VecE3)
         c = max(c, -1.0)
         M = hcat(convert(Vector{Float64}, v0),
                  convert(Vector{Float64}, v1))'
-        s = svdfact(M, thin=false)
+        s = LinearAlgebra.svdfact(M, thin=false)
         axis = convert(VecE3, s[:V][:,2])
         w2 = (1.0 + c)*0.5
         return Quat(axis * sqrt(1.0 - w2), sqrt(w2))
@@ -116,7 +116,7 @@ a and b for t ∈ [0,1].
 Based on the Eigen implementation for slerp.
 """
 function lerp(a::Quat, b::Quat, t::Float64)
-  
+
     d = a⋅b
     absD = abs(d)
 
@@ -182,7 +182,7 @@ struct RPY <: FieldVector{3, Float64}
 end
 function Base.convert(::Type{RPY}, q::Quat)
 
-    q2 = normalize(q)
+    q2 = LinearAlgebra.normalize(q)
     x = q2[1]
     y = q2[2]
     z = q2[3]
@@ -203,7 +203,7 @@ function Base.convert(::Type{RPY}, q::Quat)
 
     # yaw (z-axis rotation)
     siny = 2(w * z + x * y)
-    cosy = 1.0 - 2(y * y + z * z) 
+    cosy = 1.0 - 2(y * y + z * z)
     yaw = atan2(siny, cosy)
 
     RPY(roll, pitch, yaw)

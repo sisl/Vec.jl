@@ -22,39 +22,39 @@ struct Plane3
     Constructs a plane from its normal n and distance to the origin d
     such that the algebraic equation of the plane is n⋅x + d = 0.
     """
-    Plane3(normal::VecE3, offset::Real) = new(normalize(normal), convert(Float64, offset))
+    Plane3(normal::VecE3, offset::Real) = new(LinearAlgebra.normalize(normal), convert(Float64, offset))
 
 
     """
     Construct a plane from its normal and a point on the plane.
     """
     function Plane3(normal::VecE3, P::VecE3)
-        n = normalize(normal)
+        n = LinearAlgebra.normalize(normal)
         offset = -n⋅P
         return new(n, offset)
     end
 end
 
 """
-Constructs a plane passing through the three points. 
+Constructs a plane passing through the three points.
 """
 function Plane3(p0::VecE3, p1::VecE3, p2::VecE3)
     v0 = p2 - p0
     v1 = p1 - p0
 
     normal = v0×v1
-    nnorm = norm(normal)
-    if nnorm <= norm(v0)*norm(v1)*eps()
+    nnorm = LinearAlgebra.norm(normal)
+    if nnorm <= LinearAlgebra.norm(v0)*LinearAlgebra.norm(v1)*eps()
         M = hcat(convert(Vector{Float64}, v0),
                  convert(Vector{Float64}, v1))'
-        s = svdfact(M, thin=false)
+        s = LinearAlgebra.svdfact(M, thin=false)
         normal = convert(VecE3, s[:V][:,2])
     else
-        normal = normalize(normal)
+        normal = LinearAlgebra.normalize(normal)
     end
-    
+
     offset = -p0⋅normal
-    
+
     return Plane3(normal, offset)
 end
 

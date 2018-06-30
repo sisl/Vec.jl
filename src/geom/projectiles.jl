@@ -26,13 +26,13 @@ function closest_time_of_approach(A::Projectile, B::Projectile)
     if aΔ ≈ 0.0
         return 0.0
     else
-        return -dot(W, Δ) / aΔ
+        return -(W⋅Δ) / aΔ
     end
 end
 function closest_approach_distance(A::Projectile, B::Projectile, t_CPA::Float64=closest_time_of_approach(A, B))
     Aₜ = convert(VecE2, propagate(A, t_CPA).pos)
     Bₜ = convert(VecE2, propagate(B, t_CPA).pos)
-    return norm(Aₜ - Bₜ)
+    return LinearAlgebra.norm(Aₜ - Bₜ)
 end
 function closest_time_of_approach_and_distance(A::Projectile, B::Projectile)
     t_CPA = closest_time_of_approach(A, B)
@@ -47,11 +47,11 @@ function get_intersection_time(A::Projectile, seg::LineSegment)
     v₂ = seg.B - seg.A
     v₃ = polar(1.0, A.pos.θ + π/2)
 
-    denom = dot(v₂, v₃)
+    denom = (v₂⋅v₃)
 
     if !isapprox(denom, 0.0, atol=1e-10)
-        d₁ = cross(v₂, v₁) / denom # time for projectile (0 ≤ t₁)
-        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        d₁ = (v₂×v₁) / denom # time for projectile (0 ≤ t₁)
+        t₂ = (v₁⋅v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
         if 0.0 ≤ d₁ && 0.0 ≤ t₂ ≤ 1.0
             return d₁/A.v
         end
@@ -74,12 +74,12 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
     v₂ = seg.B - seg.A
     v₃ = polar(1.0, P.pos.θ + π/2)
 
-    denom = dot(v₂, v₃)
+    denom = (v₂⋅v₃)
 
     if !isapprox(denom, 0.0, atol=1e-10)
 
-        d₁ = cross(v₂, v₁) / denom # time for projectile (0 ≤ d₁)
-        t₂ = dot(v₁, v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
+        d₁ = (v₂×v₁) / denom # time for projectile (0 ≤ d₁)
+        t₂ = (v₁⋅v₃) / denom # time for segment (0 ≤ t₂ ≤ 1)
 
         if 0.0 ≤ d₁ && 0.0 ≤ t₂ ≤ 1.0
             t = d₁/P.v
@@ -90,8 +90,8 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
                 r = polar(1.0, P.pos.θ)
                 projA = proj(seg.A - o, r, VecE2)
                 projB = proj(seg.B - o, r, VecE2)
-                tA = max(norm(projA)/P.v * sign(dot(r, projA)), 0.0)
-                tB = max(norm(projB)/P.v * sign(dot(r, projB)), 0.0)
+                tA = max(LinearAlgebra.norm(projA)/P.v * sign(r⋅projA), 0.0)
+                tB = max(LinearAlgebra.norm(projB)/P.v * sign(r⋅projB), 0.0)
                 pA = VecE2(propagate(P, tA).pos)
                 pB = VecE2(propagate(P, tB).pos)
                 distA = normsquared(seg.A - pA)
@@ -121,8 +121,8 @@ function closest_time_of_approach_and_distance(P::Projectile, seg::LineSegment, 
                 r = polar(1.0, P.pos.θ)
                 projA = proj(seg.A - o, r, VecE2)
                 projB = proj(seg.B - o, r, VecE2)
-                tA = max(norm(projA)/P.v * sign(dot(r, projA)), 0.0)
-                tB = max(norm(projB)/P.v * sign(dot(r, projB)), 0.0)
+                tA = max(LinearAlgebra.norm(projA)/P.v * sign(r⋅projA), 0.0)
+                tB = max(LinearAlgebra.norm(projB)/P.v * sign(r⋅projB), 0.0)
                 pA = VecE2(propagate(P, tA).pos)
                 pB = VecE2(propagate(P, tB).pos)
                 distA = normsquared(seg.A - pA)

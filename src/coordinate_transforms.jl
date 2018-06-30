@@ -267,21 +267,21 @@ function Base.convert(::Type{UTM}, lla::LatLonAlt, datum::GeodeticDatum=WGS_84, 
     FE = 500000.0 # false easting
     ko = 0.9996   # central scale factor
 
-    zone_centers = -177.0*pi/180 + 6.0*pi/180*collect(0:59) # longitudes of the zone centers
+    zone_centers = collect(0:59).*(6.0*π/180) .- (177.0*π/180) # longitudes of the zone centers
     if zone == -1
-        zone = indmin(map(x->abs(lon - x), zone_centers)) # index of min zone center
+        zone = argmin(map(x->abs(lon - x), zone_centers)) # index of min zone center
     end
     long0 = zone_centers[zone]
 
-    s  = sin(lat)
-    c  = cos(lat)
-    t  = tan(lat)
+    s = sin(lat)
+    c = cos(lat)
+    t = tan(lat)
 
     a = datum.a
     b = datum.b
 
     n  = (a-b)/(a+b)
-    e₁  = sqrt((a^2-b^2)/a^2) # first eccentricity
+    e₁ = sqrt((a^2-b^2)/a^2) # first eccentricity
     ep = sqrt((a^2-b^2)/b^2) # second eccentricity
     nu = a/(1-e₁^2*s^2)^0.5   # radius of curvature in the prime vertical
     dh = lon - long0         # longitudinal distance from central meridian

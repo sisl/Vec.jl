@@ -61,8 +61,8 @@ let
     lla = LatLonAlt(0.1,0.2+2π,0.3)
     @test isapprox(ensure_lon_between_pies(lla).lon, 0.2, atol=1e-10)
 
-    @test isapprox(get_earth_radius(0.0), 6378137.0, atol=1e-8)
-    @test isapprox(get_earth_radius(π/2), 6356752.3, atol=1e-8)
+    @test isapprox(get_earth_radius(0.0), 6378137.0, atol=0.1)
+    @test isapprox(get_earth_radius(π/2), 6356752.3, atol=0.1)
 
     v3 = convert(VecE3, ECEF(0.1,0.2,0.3))
     @test v3.x == 0.1
@@ -125,5 +125,4 @@ let
         @test isapprox(ecef2.y, ecef.y, atol=1.0)
         @test isapprox(ecef2.z, ecef.z, atol=1.0)
     end
-
 end

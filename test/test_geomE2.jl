@@ -1,23 +1,25 @@
-@test isapprox(deltaangle(0.0, 0.0),  0.0)
-@test isapprox(deltaangle(0.0, 1.0),  1.0)
-@test isapprox(deltaangle(0.0, 2π),  0.0, atol=1e-10)
-@test isapprox(deltaangle(0.0, π + 1.0), -(π- 1.0))
+let
+    @test isapprox(deltaangle(0.0, 0.0),  0.0)
+    @test isapprox(deltaangle(0.0, 1.0),  1.0)
+    @test isapprox(deltaangle(0.0, 2π),  0.0, atol=1e-10)
+    @test isapprox(deltaangle(0.0, π + 1.0), -(π- 1.0))
 
-@test isapprox(angledist(0.0, 0.0), 0.0)
-@test isapprox(angledist(0.0, 1.0), 1.0)
-@test isapprox(angledist(0.0, 2π), 0.0, atol=1e-10)
-@test isapprox(angledist(0.0, π + 1.0), π- 1.0)
+    @test isapprox(angledist(0.0, 0.0), 0.0)
+    @test isapprox(angledist(0.0, 1.0), 1.0)
+    @test isapprox(angledist(0.0, 2π), 0.0, atol=1e-10)
+    @test isapprox(angledist(0.0, π + 1.0), π- 1.0)
 
-@test isapprox(lerp_angle(0.0, 0.0, 1.0), 0.0)
-@test isapprox(lerp_angle(0.0, 2π, 0.5), 0.0, atol=1e-10)
-@test isapprox(lerp_angle(0.0, 2.0, 0.75),  1.5)
-@test isapprox(lerp_angle(0.0, 2π-2, 0.75), -1.5)
+    @test isapprox(lerp_angle(0.0, 0.0, 1.0), 0.0)
+    @test isapprox(lerp_angle(0.0, 2π, 0.5), 0.0, atol=1e-10)
+    @test isapprox(lerp_angle(0.0, 2.0, 0.75),  1.5)
+    @test isapprox(lerp_angle(0.0, 2π-2, 0.75), -1.5)
 
-@test are_collinear(VecE2(0.0,0.0), VecE2(1.0,1.0), VecE2(2.0,2.0))
-@test are_collinear(VecE2(0.0,0.0), VecE2(1.0,1.0), VecE2(-2.0,-2.0))
-@test are_collinear(VecE2(0.0,0.0), VecE2(0.5,1.0), VecE2(1.0,2.0))
-@test are_collinear(VecE2(1.0,2.0), VecE2(0.0,0.0), VecE2(0.5,1.0))
-@test !are_collinear(VecE2(0.0,0.0), VecE2(1.0,0.0), VecE2(0.0,1.0))
+    @test are_collinear(VecE2(0.0,0.0), VecE2(1.0,1.0), VecE2(2.0,2.0))
+    @test are_collinear(VecE2(0.0,0.0), VecE2(1.0,1.0), VecE2(-2.0,-2.0))
+    @test are_collinear(VecE2(0.0,0.0), VecE2(0.5,1.0), VecE2(1.0,2.0))
+    @test are_collinear(VecE2(1.0,2.0), VecE2(0.0,0.0), VecE2(0.5,1.0))
+    @test !are_collinear(VecE2(0.0,0.0), VecE2(1.0,0.0), VecE2(0.0,1.0))
+end
 
 let
     seg = LineSegment1D(0,1)
@@ -199,22 +201,24 @@ let
     # @test isapprox(d_PCA, 1.0)
 end
 
-@test  contains(Circ(0,0,1.0), VecE2(0,0))
-@test !contains(Circ(2,0,1.0), VecE2(0,0))
-@test  contains(Circ(2,0,1.0), VecE2(1.5,0))
-@test  contains(Circ(2,0,3,1.0), VecE3(1.5,0,3))
+let
+    @test  contains(Circ(0,0,1.0), VecE2(0,0))
+    @test !contains(Circ(2,0,1.0), VecE2(0,0))
+    @test  contains(Circ(2,0,1.0), VecE2(1.5,0))
+    @test  contains(Circ(2,0,3,1.0), VecE3(1.5,0,3))
 
-box = AABB(VecE2(0.0, 0.5), 2.0, 5.0)
-@test  contains(box, VecE2( 0.0,0.0))
-@test  contains(box, VecE2(-1.0,0.0))
-@test !contains(box, VecE2(-2.0,0.0))
-@test !contains(box, VecE2( 1.0,3.1))
+    box = AABB(VecE2(0.0, 0.5), 2.0, 5.0)
+    @test  contains(box, VecE2( 0.0,0.0))
+    @test  contains(box, VecE2(-1.0,0.0))
+    @test !contains(box, VecE2(-2.0,0.0))
+    @test !contains(box, VecE2( 1.0,3.1))
 
-box = AABB(VecE2(-1.0, -2.0), VecE2(1.0, 3.0))
-@test  contains(box, VecE2( 0.0,0.0))
-@test  contains(box, VecE2(-1.0,0.0))
-@test !contains(box, VecE2(-2.0,0.0))
-@test !contains(box, VecE2( 1.0,3.1))
+    box = AABB(VecE2(-1.0, -2.0), VecE2(1.0, 3.0))
+    @test  contains(box, VecE2( 0.0,0.0))
+    @test  contains(box, VecE2(-1.0,0.0))
+    @test !contains(box, VecE2(-2.0,0.0))
+    @test !contains(box, VecE2( 1.0,3.1))
+end
 
 let
     box = OBB(VecSE2(0.0, 0.5, 0.0), 2.0, 5.0)
@@ -280,5 +284,4 @@ let
     @test get_side(plane, VecE3(-1.0,0.0,0.0)) == -1
     @test get_side(plane, VecE3( 1.0,0.5,0.7)) ==  1
     @test get_side(plane, VecE3(-1.0,0.7,0.5)) == -1
-
 end

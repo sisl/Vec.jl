@@ -26,14 +26,14 @@ function get_distance(seg::LineSegment, P::VecE2)
         return 0.0
     end
 
-    r = dot(ab, pb)/denom
+    r = (ab⋅pb)/denom
 
     if r ≤ 0.0
-        norm(P - seg.A)
+        LinearAlgebra.norm(P - seg.A)
     elseif r ≥ 1.0
-        norm(P - seg.B)
+        LinearAlgebra.norm(P - seg.B)
     else
-        norm(P - (seg.A + r*ab))
+        LinearAlgebra.norm(P - (seg.A + r*ab))
     end
 end
 
@@ -49,11 +49,11 @@ The angular distance between the two line segments
 function angledist(segA::LineSegment, segB::LineSegment)
     u = segA.B - segA.A
     v = segB.B - segB.A
-    sqdenom = dot(u,u)*dot(v,v)
+    sqdenom = (u⋅u)*(v⋅v)
     if isapprox(sqdenom, 0.0, atol=1e-10)
         return NaN
     end
-    return acos(dot(u,v) / sqrt(sqdenom))
+    return acos((u⋅v) / sqrt(sqdenom))
 end
 
 """

@@ -1,4 +1,4 @@
-# let
+let
     q = Quat(1.0,2.0,3.0,4.5)
     @test length(q) == 4
     @test imag(q) == VecE3(1.0,2.0,3.0)
@@ -33,4 +33,4 @@
         @test norm(inv(q)*q - Quat(0,0,0,1)) < 1e-8
         @test norm(q*inv(q) - Quat(0,0,0,1)) < 1e-8
     end
-# end
+end

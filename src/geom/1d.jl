@@ -26,7 +26,7 @@ function get_distance(seg::LineSegment1D, P::Real)::Float64
     end
 end
 
-contains(P::LineSegment1D, v::Float64) = P.a ≤ v ≤ P.b
-contains(P::LineSegment1D, Q::LineSegment1D) = Q.a ≥ P.a && Q.b ≤ P.b
+Base.contains(P::LineSegment1D, v::Float64) = P.a ≤ v ≤ P.b
+Base.contains(P::LineSegment1D, Q::LineSegment1D) = Q.a ≥ P.a && Q.b ≤ P.b
 
 intersects(P::LineSegment1D, Q::LineSegment1D) = P.b ≥ Q.a && Q.b ≥ P.a

@@ -46,7 +46,6 @@ export
     orientation,
     are_collinear,
     get_intersection,
-    contains,
 
     Circ,
     AABB,

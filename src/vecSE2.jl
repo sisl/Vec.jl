@@ -57,7 +57,7 @@ function normalize_euclidian(a::VecSE2, p::Real=2)
     return VecSE2(a.x/n, a.y/n, a.θ)
 end
 
-Base.atan2(a::VecSE2) = atan2(a.y, a.x)
+Base.atan(a::VecSE2) = atan(a.y, a.x)
 
 function lerp(a::VecSE2, b::VecSE2, t::Real)
     x = a.x + (b.x-a.x)*t

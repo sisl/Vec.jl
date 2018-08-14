@@ -222,12 +222,12 @@ function Base.convert(::Type{LatLonAlt}, ecef::ECEF, datum::GeodeticDatum=WGS_84
     y = ecef.y
     z = ecef.z
 
-    λ = atan2(y, x)
+    λ = atan(y, x)
     p = sqrt(x*x + y*y)
-    θ = atan2(z*a, (p*b))
+    θ = atan(z*a, (p*b))
 
     h = 0.0
-    ϕ = atan2(z,p*(1.0-e²))
+    ϕ = atan(z,p*(1.0-e²))
 
     # the equation diverges at the poles
     if isapprox(abs(θ), π/2, atol=0.1)
@@ -240,7 +240,7 @@ function Base.convert(::Type{LatLonAlt}, ecef::ECEF, datum::GeodeticDatum=WGS_84
         while Δh > 1e-4
             N = a / sqrt(1-e²*sin(ϕ)^2)
             h₂ = p/cos(ϕ) - N
-            ϕ = atan2(z, p*(1-e²*N/(N + h₂)))
+            ϕ = atan(z, p*(1-e²*N/(N + h₂)))
             Δh = abs(h - h₂)
             h = h₂
         end

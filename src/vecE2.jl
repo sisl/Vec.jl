@@ -14,7 +14,7 @@ polar(r::Real, θ::Real) = VecE2(r*cos(θ), r*sin(θ))
 
 Base.show(io::IO, a::VecE2) = @printf(io, "VecE2(%.3f, %.3f)", a.x, a.y)
 
-Base.atan2(a::VecE2) = atan2(a.y, a.x)
+Base.atan(a::VecE2) = atan(a.y, a.x)
 
 dist(a::VecE2, b::VecE2) = hypot(a.x-b.x, a.y-b.y)
 function dist2(a::VecE2, b::VecE2)

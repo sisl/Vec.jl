@@ -11,7 +11,7 @@ Base.:-(seg::LineSegment, V::VecE2) = LineSegment(seg.A - V, seg.B - V)
 Base.convert(::Type{Line}, seg::LineSegment) = Line(seg.A, seg.B)
 Base.convert(::Type{LineSegment}, line::Line) = LineSegment(line.A, line.B)
 
-get_polar_angle(seg::LineSegment) = mod2pi(atan2(seg.B.y - seg.A.y, seg.B.x - seg.A.x))
+get_polar_angle(seg::LineSegment) = mod2pi(atan(seg.B.y - seg.A.y, seg.B.x - seg.A.x))
 
 """
 The distance between the line segment and the point P

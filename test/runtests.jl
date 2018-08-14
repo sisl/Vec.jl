@@ -1,7 +1,7 @@
 using Vec
 using Test
 import LinearAlgebra: norm, normalize, dot
-import Random: srand
+import Random: seed!
 
 @test invlerp(0.0,1.0,0.5) ≈ 0.5
 @test invlerp(0.0,1.0,0.4) ≈ 0.4

@@ -8,7 +8,7 @@ deltaangle(a::Real, b::Real)
 Return the minimum δ such that
     a + δ = mod(b, 2π)
 """
-deltaangle(a::Real, b::Real) = atan2(sin(b-a), cos(b-a))
+deltaangle(a::Real, b::Real) = atan(sin(b-a), cos(b-a))
 
 """
 Distance between two angles

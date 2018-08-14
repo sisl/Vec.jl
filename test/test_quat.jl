@@ -15,7 +15,7 @@ let
     @test isapprox(sol, [-0.00250956, -0.948614,  0.316205, mod2pi(-1.84447)], atol=1e-3) ||
           isapprox(sol, [ 0.00250956,  0.948614, -0.316205, mod2pi( 1.84447)], atol=1e-3)
 
-    srand(0)
+    seed!(0)
     for i in 1 : 5
         a = normalize(VecE3(rand(),rand(),rand()))
         b = normalize(VecE3(rand(),rand(),rand()))
@@ -26,7 +26,7 @@ let
     @test isapprox(angledist(Quat(1,0,0,0), Quat(0,1,0,0)), π, atol=1e-6)
     @test norm(lerp(Quat(1,0,0,0), Quat(0,1,0,0), 0.5) - Quat(√2/2, √2/2, 0, 0)) < 1e-6
 
-    srand(0)
+    seed!(0)
     for i in 1 : 5
         q = rand(Quat)
         @test isapprox(norm(q), 1.0, atol=1e-8)

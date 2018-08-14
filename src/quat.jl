@@ -73,7 +73,7 @@ The angle (in radians) between two rotations
 """
 function angledist(a::Quat, b::Quat)
     d = a * conj(b)
-    return 2*atan2(LinearAlgebra.norm(imag(d)), abs(d.w))
+    return 2*atan(LinearAlgebra.norm(imag(d)), abs(d.w))
 end
 
 """
@@ -143,7 +143,7 @@ The rotation axis for a quaternion.
 """
 function get_axis(q::Quat)
 
-    θ = 2*atan2(sqrt(q.x*q.x + q.y*q.y + q.z*q.z), q.w)
+    θ = 2*atan(sqrt(q.x*q.x + q.y*q.y + q.z*q.z), q.w)
     h = sin(θ/2)
 
     x = q.x / h
@@ -191,7 +191,7 @@ function Base.convert(::Type{RPY}, q::Quat)
     # roll (x-axis rotation)
     sinr = 2(w * x + y * z)
     cosr = 1.0 - 2(x * x + y * y)
-    roll = atan2(sinr, cosr)
+    roll = atan(sinr, cosr)
 
     # pitch (y-axis rotation)
     sinp = 2(w * y - z * x)
@@ -204,7 +204,7 @@ function Base.convert(::Type{RPY}, q::Quat)
     # yaw (z-axis rotation)
     siny = 2(w * z + x * y)
     cosy = 1.0 - 2(y * y + z * z)
-    yaw = atan2(siny, cosy)
+    yaw = atan(siny, cosy)
 
     RPY(roll, pitch, yaw)
 end

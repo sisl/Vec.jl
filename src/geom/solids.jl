@@ -14,7 +14,7 @@ Circ(x::Real, y::Real, z::Real, r::Real) = Circ{VecE3}(VecE3(x, y, z), r)
 Base.:+(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c + v, circ.r)
 Base.:-(circ::Circ{VecE2}, v::VecE2) = Circ{VecE2}(circ.c - v, circ.r)
 
-Base.contains(circ::Circ{V}, p::V) where {V} = normsquared(circ.c - p) ≤ circ.r*circ.r
+Base.in(p::V, circ::Circ{V}) where {V} = normsquared(circ.c - p) ≤ circ.r*circ.r
 inertial2body(circ::Circ{VecE2}, reference::VecSE2) = Circ{VecE2}(inertial2body(circ.c, reference), circ.r)
 
 # Axis-Aligned Bounding Box
@@ -32,7 +32,7 @@ end
 Base.:+(box::AABB, v::VecE2) = AABB(box.center + v, box.len, box.wid)
 Base.:-(box::AABB, v::VecE2) = AABB(box.center - v, box.len, box.wid)
 
-function Base.contains(box::AABB, P::VecE2)
+function Base.in(P::VecE2, box::AABB)
     -box.len/2 ≤ P.x - box.center.x ≤ box.len/2 &&
     -box.wid/2 ≤ P.y - box.center.y ≤ box.wid/2
 end
@@ -52,9 +52,9 @@ OBB(center::VecSE2, len::Float64, wid::Float64) = OBB(convert(VecE2, center), le
 Base.:+(box::OBB, v::VecE2) = OBB(box.aabb+v, box.θ)
 Base.:-(box::OBB, v::VecE2) = OBB(box.aabb-v, box.θ)
 
-function Base.contains(box::OBB, P::VecE2)
+function Base.in(P::VecE2, box::OBB)
     C = box.aabb.center
-    contains(box.aabb, rot(P-C, -box.θ)+C)
+    in(rot(P-C, -box.θ)+C, box.aabb)
 end
 
 function inertial2body(box::OBB, reference::VecSE2)

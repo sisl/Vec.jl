@@ -3,7 +3,7 @@ const DUMMY_PRECISION = 1e-12
 Base.isfinite(a::AbstractVec) = all(isfinite.(a))
 Base.isinf(a::AbstractVec) = any(isinf.(a))
 
-function StaticArrays.similar_type(::Type{V}, ::Type{F}, size::Size{N}) where {V<:VecE, F<:AbstractFloat, N}
+function StaticArrays.similar_type(::Type{V}, ::Type{F}, size::Size{N}) where {V<:AbstractVec, F<:AbstractFloat, N}
     if size == Size(V) && eltype(V) == F
         return V
     else # convert back to SArray

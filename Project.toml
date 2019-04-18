@@ -1,7 +1,7 @@
 name = "Vec"
 uuid = "44eeaf0b-fee4-471f-9310-ed6585cb3142"
 repo = "https://github.com/sisl/Vec.jl.git"
-version = "0.0.0"
+version = "2.0.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -10,8 +10,8 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "ForwardDiff"]

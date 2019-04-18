@@ -5,11 +5,21 @@ Provides 2D and 3D vector types for vector operations in Julia.
 [![Build Status](https://travis-ci.org/sisl/Vec.jl.svg?branch=master)](https://travis-ci.org/sisl/Vec.jl)
 [![Coverage Status](https://coveralls.io/repos/sisl/Vec.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/sisl/Vec.jl?branch=master)
 
-# Git It
+# Installation
 
-```julia
-Pkg.clone("https://github.com/sisl/Vec.jl.git")
-```
+Run one of those commands in the Julia REPL:
+
+- Through the SISL registry: 
+  ```julia 
+  ] registry add https://github.com/sisl/Registry
+  add Vec
+  ```
+
+- Through `Pkg`
+  ```julia
+  import Pkg
+  Pkg.add(PackageSpec(url="https://github.com/sisl/Vec.jl.git"))
+  ```
 
 # Usage
 

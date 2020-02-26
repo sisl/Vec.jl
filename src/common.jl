@@ -1,7 +1,8 @@
 const DUMMY_PRECISION = 1e-12
 
-Base.isfinite(a::AbstractVec) = all(isfinite.(a))
-Base.isinf(a::AbstractVec) = any(isinf.(a))
+Base.isfinite(a::AbstractVec) = all(isfinite, a)
+Base.isinf(a::AbstractVec) = any(isinf, a)
+Base.isnan(a::AbstractVec) = any(isnan, a)
 
 function StaticArrays.similar_type(::Type{V}, ::Type{F}, size::Size{N}) where {V<:AbstractVec, F<:AbstractFloat, N}
     if size == Size(V) && eltype(V) == F

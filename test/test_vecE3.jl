@@ -29,12 +29,12 @@ let
 	@test a != b
 
 	@test a + b == VecE3(0.5, 3.0, -1.0)
-	@test a + 1 == VecE3(1.0, 2.0,  3.0)
-	@test a + 0.5 == VecE3(0.5, 1.5, 2.5)
+	@test a .+ 1 == VecE3(1.0, 2.0,  3.0)
+	@test a .+ 0.5 == VecE3(0.5, 1.5, 2.5)
 
 	@test a - b == VecE3(-0.5, -1.0, 5.0)
-	@test a - 1 == VecE3(-1.0,  0.0, 1.0)
-	@test a - 0.5 == VecE3(-0.5, 0.5, 1.5)
+	@test a .- 1 == VecE3(-1.0,  0.0, 1.0)
+	@test a .- 0.5 == VecE3(-0.5, 0.5, 1.5)
 
 	@test a * 2 == VecE3(0.0, 2.0, 4.0)
 	@test a * 0.5 == VecE3(0.0, 0.5, 1.0)

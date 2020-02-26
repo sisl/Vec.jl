@@ -2,18 +2,17 @@
 language: julia
 os:
   - linux
-  # - osx
+  - osx
+  - windows
 julia:
   - 1.0
-  - 1.1
+  - 1.3
   - nightly
 matrix:
   allow_failures:
     - julia: nightly
 notifications:
   email: false
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia --project --check-bounds=yes -e 'import Pkg; Pkg.build(); Pkg.test("Vec"; coverage=true)'
+
 after_success:
   - julia --project -e 'using Pkg; cd(Pkg.dir("Vec")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

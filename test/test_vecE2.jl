@@ -27,12 +27,12 @@ let
 	@test a != b
 
 	@test a + b == VecE2(0.5, 3.0)
-	@test a + 1 == VecE2(1.0, 2.0)
-	@test a + 0.5 == VecE2(0.5, 1.5)
+	@test a .+ 1 == VecE2(1.0, 2.0)
+	@test a .+ 0.5 == VecE2(0.5, 1.5)
 
 	@test a - b == VecE2(-0.5, -1.0)
-	@test a - 1 == VecE2(-1.0,  0.0)
-	@test a - 0.5 == VecE2(-0.5, 0.5)
+	@test a .- 1 == VecE2(-1.0,  0.0)
+	@test a .- 0.5 == VecE2(-0.5, 0.5)
 
 	@test a * 2 == VecE2(0.0, 2.0)
 	@test a * 0.5 == VecE2(0.0, 0.5)

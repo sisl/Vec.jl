@@ -2,7 +2,7 @@
 
 Provides 2D and 3D vector types for vector operations in Julia.
 
-[![Build Status](https://github.com/sisl/Vec.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/sisl/Vec.jl/actions/workflows/CI.yml)
+[![Build Status](https://github.com/sisl/Vec.jl/actions/workflows/CI.yaml/badge.svg)](https://github.com/sisl/Vec.jl/actions/workflows/CI.yaml)
 [![Coverage Status](https://coveralls.io/repos/sisl/Vec.jl/badge.svg)](https://coveralls.io/r/sisl/Vec.jl)
 # Installation
 
